@@ -4,9 +4,9 @@ A simple python package that provides a unified interface to several LLM provide
 
 There is nothing special about this library, but some of the requirements I needed when I startec building this (that other libraries did not have):
 
-- Unified Interface: Switch between LLM providers with a single line of code. Standardizes on the OpenAI ChatML format. For example, the standard prompt sent a model is formatted as an array of objects, where each object has a role (`system`, `user`, or `assistant`) and content of the form.
+- Uses typed datamodels for model configuration: This makes it easier to build web apis (fast api) on top of this library. For example, the text generation config is a pydantic model.
 
-```json
+```python
 config = TextGenerationConfig(
     model="gpt-3.5-turbo-0301",
     n=1,
@@ -17,13 +17,17 @@ config = TextGenerationConfig(
     frequency_penalty=0.0,
     presence_penalty=0.0,
 )
+```
+
+- Unified Interface: Switch between LLM providers with a single line of code. Standardizes on the OpenAI ChatML format. For example, the standard prompt sent a model is formatted as an array of objects, where each object has a role (`system`, `user`, or `assistant`) and content of the form.
+
+```json
+
 messages = [
     {"role": "user", "content": "You are a helpful assistant that can explain concepts clearly to a 6 year old child."},
     {"role": "user", "content": "What is  gravity?"},
 ]
 ```
-
-- Uses typed datamodels for model configuration: This makes it easier to build web apis (fast api) on top of this library.
 
 Are there other libraries that do things like this really well? Yes! I'd recommend looking at guidance.
 
