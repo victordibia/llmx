@@ -21,7 +21,7 @@ config = TextGenerationConfig(
 
 - Unified Interface: Switch between LLM providers with a single line of code. Standardizes on the OpenAI ChatML format. For example, the standard prompt sent a model is formatted as an array of objects, where each object has a role (`system`, `user`, or `assistant`) and content of the form.
 
-```json
+```python
 
 messages = [
     {"role": "user", "content": "You are a helpful assistant that can explain concepts clearly to a 6 year old child."},
