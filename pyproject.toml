@@ -3,11 +3,11 @@ requires = ["setuptools", "setuptools-scm"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "Pyllm" 
+name = "llmx" 
 authors = [
   { name="Victor Dibia", email="victor.dibia@gmail.com" },
 ]
-description = "PYLLM: A library for LLM Text Generation"
+description = "LLMX: A library for LLM Text Generation"
 readme = "README.md"
 license = { file="LICENSE" }
 requires-python = ">=3.9"
@@ -19,9 +19,9 @@ classifiers = [
 
 dependencies = [
     "pydantic",
-  "openai", 
-  "tiktoken",
-  "diskcache",
+    "openai", 
+    "tiktoken",
+    "diskcache",
 ]
 dynamic = ["version"]
 
@@ -30,20 +30,20 @@ include-package-data = true
 
 
 [tool.setuptools.dynamic]
-version = {attr = "pyllm.version.VERSION"}
+version = {attr = "llmx.version.VERSION"}
 readme = {file = ["README.md"]}
 
 [tool.setuptools.packages.find]  
-include = ["pyllm*"]  
+include = ["llmx*"]  
 exclude = ["*.tests*"]  
 namespaces = false  
 
 [tool.setuptools.package-data]
-"pyllm" = ["*.*"]
+"llmx" = ["*.*"]
 
 [project.urls]
-"Homepage" = "https://github.com/victordibia/pyllm"
-"Bug Tracker" = "https://github.com/victordibia/pyllm/issues"
+"Homepage" = "https://github.com/victordibia/llmx"
+"Bug Tracker" = "https://github.com/victordibia/llmx/issues"
 
 [project.scripts]
-pyllm = "pyllm.cli:run" 
+llmx = "llmx.cli:run" 
