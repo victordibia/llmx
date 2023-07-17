@@ -1,6 +1,6 @@
 .vscode
-pyllm/generators/cache
-Pyllm.egg-info
+llmx/generators/cache
+llmx.egg-info
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
