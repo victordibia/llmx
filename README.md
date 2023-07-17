@@ -25,7 +25,7 @@ config = TextGenerationConfig(
 
 messages = [
     {"role": "user", "content": "You are a helpful assistant that can explain concepts clearly to a 6 year old child."},
-    {"role": "user", "content": "What is  gravity?"},
+    {"role": "user", "content": "What is  gravity?"}
 ]
 ```
 
@@ -51,6 +51,13 @@ Note that you may want to use the latest version of pip to install this package.
 `python3 -m pip install --upgrade pip`
 
 ## Usage
+
+Set your api keys first
+
+```bash
+export OPENAI_API_KEY=<your key>
+export PALM_API_KEY=<your key>
+```
 
 ```python
 from pyllm import OpenAITextGenerator, TextGenerationConfig

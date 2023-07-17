@@ -17,12 +17,16 @@ classifiers = [
     "Operating System :: OS Independent",
 ]
 
+
 dependencies = [
     "pydantic",
     "openai", 
+    "google-generativeai",
     "tiktoken",
     "diskcache",
 ]
+optional-dependencies = {web = ["fastapi"]}
+
 dynamic = ["version"]
 
 [tool.setuptools]

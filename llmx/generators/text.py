@@ -6,9 +6,6 @@ import openai
 
 
 from diskcache import Cache
-
- 
-
 from ..utils import cache_request, num_tokens_from_messages
 from ..datamodel import TextGenerationConfig, TextGenerationResponse
 
