@@ -1,4 +1,4 @@
-# PYLLM
+# LLMX
 
 A simple python package that provides a unified interface to several LLM providers - [OpenAI](https://platform.openai.com/docs/api-reference/authentication) (default), Palm, and local HuggingFace Models.
 
@@ -36,14 +36,14 @@ Are there other libraries that do things like this really well? Yes! I'd recomme
 Install from pypi. Please use python3.9 or higher.
 
 ```bash
-pip install pyllm
+pip install llmx
 ```
 
 Install in development mode
 
 ```bash
 git clone
-cd pyllm
+cd llmx
 pip install -e .
 ```
 
@@ -60,7 +60,7 @@ export PALM_API_KEY=<your key>
 ```
 
 ```python
-from pyllm import OpenAITextGenerator, TextGenerationConfig
+from llmx import OpenAITextGenerator, TextGenerationConfig
 
 gen = OpenAITextGenerator()
 config = TextGenerationConfig(
