@@ -1,42 +1,44 @@
-# PYLLM
+# LLMX
+
+[![PyPI version](https://badge.fury.io/py/llmx.svg)](https://badge.fury.io/py/llmx)
 
 A simple python package that provides a unified interface to several LLM providers - [OpenAI](https://platform.openai.com/docs/api-reference/authentication) (default), Palm, and local HuggingFace Models.
 
 There is nothing special about this library, but some of the requirements I needed when I startec building this (that other libraries did not have):
 
-- Uses typed datamodels for model configuration: This makes it easier to build web apis (fast api) on top of this library. For example, the text generation config is a pydantic model.
+- **Unified Model Interface**: Single interface to create LLM text generators, switch between providers with a single line of code.
 
 ```python
-config = TextGenerationConfig(
-    model="gpt-3.5-turbo-0301",
-    n=1,
-    temperature=0.5,
-    max_tokens=100,
-    top_p=1.0,
-    top_k=50,
-    frequency_penalty=0.0,
-    presence_penalty=0.0,
-)
+
+openai_generator = TextGenerator(provider="openai")
+palm_generator = TextGenerator(provider="google") # or palm
+cohere_generator = TextGenerator(provider="cohere") # or palm
+hf_generator = TextGenerator(provider="huggingface") # run locally
 ```
 
-- Unified Interface: Switch between LLM providers with a single line of code. Standardizes on the OpenAI ChatML format. For example, the standard prompt sent a model is formatted as an array of objects, where each object has a role (`system`, `user`, or `assistant`) and content of the form.
+- **Unified Messaging Interface**. Standardizes on the OpenAI ChatML format. For example, the standard prompt sent a model is formatted as an array of objects, where each object has a role (`system`, `user`, or `assistant`) and content of the form. A single request is list one only one message (e.g., write code to plot a cosine wave signal). A conversation is a list of messages e.g. write code for x, update the axis to y, etc. For all models.
 
 ```python
-
 messages = [
     {"role": "user", "content": "You are a helpful assistant that can explain concepts clearly to a 6 year old child."},
     {"role": "user", "content": "What is  gravity?"}
 ]
 ```
 
-Are there other libraries that do things like this really well? Yes! I'd recommend looking at guidance.
+- Some good defaults: E.g. being able to use caching for faster responses. General policy is that cache is used if config (including messages) is the same. If you want to force a new response, set `use_cache=False` in the `generate` call.
+
+```python
+response = gen.generate(config=config, use_cache=True)
+```
+
+Are there other libraries that do things like this really well? Yes! I'd recommend looking at [guidance](https://github.com/microsoft/guidance) which does a lot more.
 
 ## Installation
 
 Install from pypi. Please use python3.9 or higher.
 
 ```bash
-pip install pyllm
+pip install llmx
 ```
 
 Install in development mode
@@ -57,25 +59,17 @@ Set your api keys first
 ```bash
 export OPENAI_API_KEY=<your key>
 export PALM_API_KEY=<your key>
+export COHERE_API_KEY=<your key>
 ```
 
 ```python
-from pyllm import OpenAITextGenerator, TextGenerationConfig
+from llmx.generators.text.textgen import TextGenerator
+from llmx.datamodel import TextGenerationConfig
 
-gen = OpenAITextGenerator()
-config = TextGenerationConfig(
-    model="gpt-3.5-turbo-0301",
-    messages=[
+gen = TextGenerator(provider="openai")
+config = TextGenerationConfig(messages=[
         {"role": "user", "content": "What is the height of the Eiffel Tower?"},
-    ],
-    n=1,
-    temperature=0.5,
-    max_tokens=100,
-    top_p=1.0,
-    top_k=50,
-    frequency_penalty=0.0,
-    presence_penalty=0.0,
-)
+    ])
 response = gen.generate(config=config, use_cache=False)
 print(response.text)
 # [{'role': 'assistant', 'content': 'The height of the Eiffel Tower is 324 meters (1,063 feet).'}]
