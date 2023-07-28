@@ -22,7 +22,7 @@ class PalmTextGenerator(BaseTextGenerator):
         palm.configure(api_key=api_key)
         self.api_key = api_key
 
-    def convert_messages_to_palm(self, messages):
+    def format_messages(self, messages):
         palm_messages = []
         system_messages = ""
         for message in messages:
@@ -39,10 +39,11 @@ class PalmTextGenerator(BaseTextGenerator):
     def generate(
         self, config: TextGenerationConfig, use_cache=True, **kwargs
     ) -> TextGenerationResponse:
+        config.model = config.model or "models/chat-bison-001"
         self.model_name = config.model
-        system_messages, messages = self.convert_messages_to_palm(config.messages)
+        system_messages, messages = self.format_messages(config.messages)
         palm_config = {
-            "model": config.model or "models/chat-bison-001",
+            "model": config.model,
             "context": system_messages,
             "examples": None,
             "candidate_count": max(1, min(8, config.n)),  # 1 <= n <= 8

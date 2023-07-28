@@ -1,6 +1,7 @@
 from .hf_textgen import HFTextGenerator
 from .openai_textgen import OpenAITextGenerator
 from .palm_textgen import PalmTextGenerator
+from .cohere_textgen import CohereTextGenerator
 from ...datamodel import TextGenerationConfig, TextGenerationResponse
 
 
@@ -18,9 +19,11 @@ class TextGenerator:
             return HFTextGenerator(provider=self.provider, **self.kwargs)
         elif self.provider == "palm" or self.provider == "google":
             return PalmTextGenerator(provider=self.provider, **self.kwargs)
+        elif self.provider == "cohere":
+            return CohereTextGenerator(provider=self.provider, **self.kwargs)
         else:
             raise ValueError(
-                f"Invalid provider '{self.provider}'. Supported types are 'openai', 'default' and 'hf'."
+                f"Invalid provider '{self.provider}'.  Supported providers are 'openai', 'hf', 'palm', and 'cohere'."
             )
 
     def generate(

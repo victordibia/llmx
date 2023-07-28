@@ -46,6 +46,13 @@ namespaces = false
 [tool.setuptools.package-data]
 "llmx" = ["*.*"]
 
+[tool.pytest.ini_options]
+filterwarnings = [
+    "ignore:Deprecated call to `pkg_resources\\.declare_namespace\\('.*'\\):DeprecationWarning",
+    "ignore::DeprecationWarning:google.rpc",
+]
+
+
 [project.urls]
 "Homepage" = "https://github.com/victordibia/llmx"
 "Bug Tracker" = "https://github.com/victordibia/llmx/issues"

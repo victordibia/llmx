@@ -6,7 +6,7 @@ A simple python package that provides a unified interface to several LLM provide
 
 There is nothing special about this library, but some of the requirements I needed when I startec building this (that other libraries did not have):
 
-- **Unified Model Interface**: Single interface to create LLM text generators, switch between providers with a single line of code.
+- **Unified Model Interface**: Single interface to create LLM text generators with support for **multiple LLM providers**.
 
 ```python
 
@@ -74,3 +74,11 @@ response = gen.generate(config=config, use_cache=False)
 print(response.text)
 # [{'role': 'assistant', 'content': 'The height of the Eiffel Tower is 324 meters (1,063 feet).'}]
 ```
+
+## Current Work
+
+- Supported models
+  - [x] OpenAI
+  - [x] PaLM
+  - [x] Cohere
+  - [ ] HuggingFace (local)

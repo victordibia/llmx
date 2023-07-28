@@ -39,3 +39,16 @@ def test_google():
         "324" in answer or "1,063" in answer or "1,063 ft" in answer or "1063" in answer
     )
     assert len(google_response.text) == 2
+
+
+def test_cohere():
+    cohere_gen = TextGenerator(provider="cohere")
+    config.model = "command"
+    cohere_response = cohere_gen.generate(config=config, use_cache=False)
+    answer = cohere_response.text[0].content
+    print(cohere_response.text[0].content)
+
+    assert (
+        "324" in answer or "1,063" in answer or "1,063 ft" in answer or "1063" in answer
+    )
+    assert len(cohere_response.text) == 2
