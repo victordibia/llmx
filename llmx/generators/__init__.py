@@ -1,1 +1,1 @@
-from .text import *
+from .text.textgen import TextGenerator
