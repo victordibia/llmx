@@ -25,7 +25,7 @@ messages = [
 ]
 ```
 
-- Some good defaults: E.g. being able to use caching for faster responses. General policy is that cache is used if config (including messages) is the same. If you want to force a new response, set `use_cache=False` in the `generate` call.
+- **Good Utils (e.g., Caching etc)**: E.g. being able to use caching for faster responses. General policy is that cache is used if config (including messages) is the same. If you want to force a new response, set `use_cache=False` in the `generate` call.
 
 ```python
 response = gen.generate(config=config, use_cache=True)
@@ -63,12 +63,8 @@ export COHERE_API_KEY=<your key>
 ```
 
 ```python
-<<<<<<< HEAD
 from llmx.generators.text.textgen import TextGenerator
 from llmx.datamodel import TextGenerationConfig
-=======
-from llmx import OpenAITextGenerator, TextGenerationConfig
->>>>>>> 2a3201a50b80b9aca4839a90680c458fb669fd50
 
 gen = TextGenerator(provider="openai")
 config = TextGenerationConfig(messages=[
