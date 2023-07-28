@@ -45,7 +45,7 @@ Install in development mode
 
 ```bash
 git clone
-cd pyllm
+cd llmx
 pip install -e .
 ```
 
@@ -63,8 +63,12 @@ export COHERE_API_KEY=<your key>
 ```
 
 ```python
+<<<<<<< HEAD
 from llmx.generators.text.textgen import TextGenerator
 from llmx.datamodel import TextGenerationConfig
+=======
+from llmx import OpenAITextGenerator, TextGenerationConfig
+>>>>>>> 2a3201a50b80b9aca4839a90680c458fb669fd50
 
 gen = TextGenerator(provider="openai")
 config = TextGenerationConfig(messages=[
