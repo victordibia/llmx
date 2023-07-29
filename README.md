@@ -2,7 +2,7 @@
 
 [![PyPI version](https://badge.fury.io/py/llmx.svg)](https://badge.fury.io/py/llmx)
 
-A simple python package that provides a unified interface to several LLM providers - OpenAI (default), PaLM, and local HuggingFace Models.
+A simple python package that provides a unified interface to several LLM providers [ OpenAI (default), PaLM, Cohere and local HuggingFace Models ].
 
 There is nothing special about this library, but some of the requirements I needed when I startec building this (that other libraries did not have):
 
