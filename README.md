@@ -31,7 +31,7 @@ messages = [
 response = gen.generate(config=config, use_cache=True)
 ```
 
-Are there other libraries that do things like this really well? Yes! I'd recommend looking at [guidance](https://github.com/microsoft/guidance) which does a lot more.
+Are there other libraries that do things like this really well? Yes! I'd recommend looking at [guidance](https://github.com/microsoft/guidance) which does a lot more. Interested in optimized inference? Try somthing like [vllm](https://github.com/vllm-project/vllm).
 
 ## Installation
 
