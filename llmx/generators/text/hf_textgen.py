@@ -1,8 +1,12 @@
+from typing import Union
+from dataclasses import asdict, dataclass
+from transformers import (AutoTokenizer, AutoModelForCausalLM, GenerationConfig)
+import torch
+
+
 from .base_textgen import BaseTextGenerator
 from ...datamodel import TextGenerationConfig, TextGenerationResponse
 from ...utils import cache_request
-from dataclasses import asdict
-from dataclasses import asdict, dataclass
 
 
 @dataclass
@@ -67,6 +71,7 @@ class DialogueTemplate:
             prompt = "[INST]"
             system_prompt = ""
             other_prompt = ""
+
             for message in self.messages:
                 if message["role"] == "system":
                     system_prompt += message["content"] + "\n"
@@ -85,32 +90,12 @@ class DialogueTemplate:
 
 class HFTextGenerator(BaseTextGenerator):
     def __init__(self, provider: str = "huggingface", device_map=None, **kwargs):
-        # Check if transformers package is installed
-        try:
-            import transformers
-            from transformers import (
-                AutoTokenizer,
-                AutoModelForCausalLM,
-                GenerationConfig,
-            )
-        except ImportError:
-            raise ImportError(
-                "Please install the `transformers` package to use the HFTextGenerator class."
-            )
-
-        # Check if torch package is installed
-        try:
-            import torch
-        except ImportError:
-            raise ImportError(
-                "Please install the `torch` package to use the HFTextGenerator class."
-            )
 
         super().__init__(provider=provider)
 
         self.dialogue_type = kwargs.get("dialogue_type", "alpaca")
 
-        self.model_name = kwargs.get("model_name", "TheBloke/Llama-2-7b-chat-fp16")
+        self.model_name = kwargs.get("model", "TheBloke/gpt4-x-vicuna-13B-HF")
         self.load_in_8bit = kwargs.get("load_in_8bit", False)
         self.device = kwargs.get("device", self.get_default_device())
         self.tokenizer = AutoTokenizer.from_pretrained(self.model_name)
@@ -137,7 +122,7 @@ class HFTextGenerator(BaseTextGenerator):
             self.model.config.bos_token_id = 1
             self.model.config.eos_token_id = 2
         else:
-            self.dialogue_template = DialogueTemplate()
+            self.dialogue_template = DialogueTemplate(end_token=self.tokenizer.eos_token)
 
     def get_default_device(self):
         """Pick GPU if available, else CPU"""
@@ -166,16 +151,22 @@ class HFTextGenerator(BaseTextGenerator):
         return instruction
 
     def generate(
-        self, config: TextGenerationConfig, use_cache=True, **kwargs
-    ) -> TextGenerationResponse:
+            self, messages: Union[list[dict],
+                                  str],
+            config: TextGenerationConfig = TextGenerationConfig(),
+            use_cache=True, **kwargs) -> TextGenerationResponse:
         config.model = self.model_name
-        config_kwargs = {**asdict(config), **kwargs}
+        cache_key_params = {
+            **asdict(config),
+            **kwargs,
+            "messages": messages,
+            "dialogue_type": self.dialogue_type}
         if use_cache:
-            response = cache_request(cache=self.cache, params=(config_kwargs))
+            response = cache_request(cache=self.cache, params=(cache_key_params))
             if response:
                 return TextGenerationResponse(**response)
 
-        self.dialogue_template.messages = config.messages
+        self.dialogue_template.messages = messages
         prompt = self.dialogue_template.get_inference_prompt()
         batch = self.tokenizer(
             prompt, return_tensors="pt", return_token_type_ids=False
@@ -234,7 +225,7 @@ class HFTextGenerator(BaseTextGenerator):
             usage=usage,
         )
         # if use_cache:
-        cache_request(cache=self.cache, params=(config_kwargs), values=asdict(response))
+        cache_request(cache=self.cache, params=(cache_key_params), values=asdict(response))
         return response
 
     def count_tokens(self, text: str):

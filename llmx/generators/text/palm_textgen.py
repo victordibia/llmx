@@ -1,5 +1,6 @@
 from dataclasses import asdict
 import os
+from typing import Union
 import google.generativeai as palm
 from .base_textgen import BaseTextGenerator
 from ...datamodel import TextGenerationConfig, TextGenerationResponse, Message
@@ -37,13 +38,15 @@ class PalmTextGenerator(BaseTextGenerator):
         return system_messages, palm_messages
 
     def generate(
-        self, config: TextGenerationConfig, use_cache=True, **kwargs
-    ) -> TextGenerationResponse:
-        config.model = config.model or "models/chat-bison-001"
-        self.model_name = config.model
-        system_messages, messages = self.format_messages(config.messages)
+            self, messages: Union[list[dict],
+                                  str],
+            config: TextGenerationConfig = TextGenerationConfig(),
+            use_cache=True, **kwargs) -> TextGenerationResponse:
+        model = config.model or "models/chat-bison-001"
+        self.model_name = model
+        system_messages, messages = self.format_messages(messages)
         palm_config = {
-            "model": config.model,
+            "model": model,
             "context": system_messages,
             "examples": None,
             "candidate_count": max(1, min(8, config.n)),  # 1 <= n <= 8
@@ -52,11 +55,10 @@ class PalmTextGenerator(BaseTextGenerator):
             "top_k": config.top_k,
             "messages": messages,
         }
-
-        print(palm_config)
-
+        # print("*********", config)
+        cache_key_params = palm_config | {"messages": messages}
         if use_cache:
-            response = cache_request(cache=self.cache, params=(palm_config))
+            response = cache_request(cache=self.cache, params=cache_key_params)
             if response:
                 return TextGenerationResponse(**response)
 
@@ -76,7 +78,7 @@ class PalmTextGenerator(BaseTextGenerator):
         response = TextGenerationResponse(
             text=response_text,
             logprobs=[],
-            config=config,
+            config=palm_config,
             usage={
                 "total_tokens": num_tokens_from_messages(
                     response_text, model=palm_config["model"]
@@ -84,7 +86,7 @@ class PalmTextGenerator(BaseTextGenerator):
             },
         )
 
-        cache_request(cache=self.cache, params=(palm_config), values=asdict(response))
+        cache_request(cache=self.cache, params=(cache_key_params), values=asdict(response))
         return response
 
     def count_tokens(self, text) -> int:

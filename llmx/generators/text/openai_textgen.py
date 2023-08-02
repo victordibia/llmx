@@ -1,3 +1,4 @@
+from typing import Union
 from .base_textgen import BaseTextGenerator
 from ...datamodel import TextGenerationConfig, TextGenerationResponse
 from ...utils import cache_request, num_tokens_from_messages
@@ -37,37 +38,42 @@ class OpenAITextGenerator(BaseTextGenerator):
         self.api_key = api_key
 
     def generate(
-        self, config: TextGenerationConfig, use_cache=True, **kwargs
+        self,  messages: Union[list[dict], str], config: TextGenerationConfig = TextGenerationConfig(), use_cache=True, **kwargs
     ) -> TextGenerationResponse:
-        config.model = config.model or "gpt-3.5-turbo-0301"
-        self.model_name = config.model
+
+        model = config.model  or "gpt-3.5-turbo-0301"
+        prompt_tokens = num_tokens_from_messages(messages)
+        max_tokens = max(context_lengths.get(model, 4096) - prompt_tokens - 10, 200)
+
+        oai_config = {
+            "model": model,
+            "temperature": config.temperature,
+            "max_tokens": max_tokens,
+            "top_p": config.top_p,
+            "frequency_penalty": config.frequency_penalty,
+            "presence_penalty": config.presence_penalty,
+            "n": config.n,
+            "messages": messages,
+        }
+         
+        self.model_name = model
+        cache_key_params = (oai_config) | {"messages": messages} 
         if use_cache:
-            response = cache_request(cache=self.cache, params=asdict(config))
+            response = cache_request(cache=self.cache, params=cache_key_params)
             if response:
                 return TextGenerationResponse(**response)
 
-        prompt_tokens = num_tokens_from_messages(config.messages)
-        max_tokens = max(context_lengths[config.model] - prompt_tokens - 10, 200)
-
-        oai_response = openai.ChatCompletion.create(
-            model=config.model,
-            messages=config.messages,
-            n=config.n,
-            temperature=config.temperature,
-            max_tokens=max_tokens,
-            top_p=config.top_p,
-            frequency_penalty=config.frequency_penalty,
-            presence_penalty=config.presence_penalty,
-        )
+        
+        oai_response = openai.ChatCompletion.create(**oai_config)
 
         response = TextGenerationResponse(
             text=[dict(x.message) for x in oai_response.choices],
             logprobs=[],
-            config=config,
+            config=oai_config,
             usage=dict(oai_response.usage),
         )
         # if use_cache:
-        cache_request(cache=self.cache, params=asdict(config), values=asdict(response))
+        cache_request(cache=self.cache, params=cache_key_params, values=asdict(response))
         return response
 
     def count_tokens(self, text) -> int:

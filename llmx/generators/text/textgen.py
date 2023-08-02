@@ -1,37 +1,41 @@
-from .hf_textgen import HFTextGenerator
 from .openai_textgen import OpenAITextGenerator
 from .palm_textgen import PalmTextGenerator
 from .cohere_textgen import CohereTextGenerator
-from ...datamodel import TextGenerationConfig, TextGenerationResponse
 
 
-class TextGenerator:
-    def __init__(self, provider: str = "openai", **kwargs):
-        self.provider = provider
-        self.kwargs = kwargs
-
-        self.generator_instance = self.get_instance()
-
-    def get_instance(self):
-        if self.provider == "openai" or self.provider == "default":
-            return OpenAITextGenerator(**self.kwargs)
-        elif self.provider == "hf" or self.provider == "huggingface":
-            return HFTextGenerator(provider=self.provider, **self.kwargs)
-        elif self.provider == "palm" or self.provider == "google":
-            return PalmTextGenerator(provider=self.provider, **self.kwargs)
-        elif self.provider == "cohere":
-            return CohereTextGenerator(provider=self.provider, **self.kwargs)
-        else:
-            raise ValueError(
-                f"Invalid provider '{self.provider}'.  Supported providers are 'openai', 'hf', 'palm', and 'cohere'."
+def text_generator(provider: str = "openai", **kwargs):
+    if provider == "openai" or provider == "default":
+        return OpenAITextGenerator(**kwargs)
+    elif provider == "palm" or provider == "google":
+        return PalmTextGenerator(provider=provider, **kwargs)
+    elif provider == "cohere":
+        return CohereTextGenerator(provider=provider, **kwargs)
+    elif provider == "hf" or provider == "huggingface":
+        try:
+            import transformers
+            from transformers import (
+                AutoTokenizer,
+                AutoModelForCausalLM,
+                GenerationConfig,
+            )
+        except ImportError:
+            raise ImportError(
+                "Please install the `transformers` package to use the HFTextGenerator class. pip install llmx[transformers]"
             )
 
-    def generate(
-        self, config: TextGenerationConfig, use_cache=True, **kwargs
-    ) -> TextGenerationResponse:
-        return self.generator_instance.generate(
-            config=config, use_cache=use_cache, **kwargs
-        )
+        # Check if torch package is installed
+        try:
+            import torch
+        except ImportError:
+            raise ImportError(
+                "Please install the `torch` package to use the HFTextGenerator class.  pip install llmx[transformers]"
+            )
 
-    def count_tokens(self, text) -> int:
-        return self.generator_instance.count_tokens(text=text)
+        from .hf_textgen import HFTextGenerator
+
+        return HFTextGenerator(provider=provider, **kwargs)
+
+    else:
+        raise ValueError(
+            f"Invalid provider '{provider}'.  Supported providers are 'openai', 'hf', 'palm', and 'cohere'."
+        )

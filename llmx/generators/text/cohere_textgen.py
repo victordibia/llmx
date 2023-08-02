@@ -1,3 +1,4 @@
+from typing import Union
 from .base_textgen import BaseTextGenerator
 from ...datamodel import TextGenerationConfig, TextGenerationResponse, Message
 from ...utils import cache_request, num_tokens_from_messages
@@ -31,16 +32,15 @@ class CohereTextGenerator(BaseTextGenerator):
         return prompt
 
     def generate(
-        self, config: TextGenerationConfig, use_cache=True, **kwargs
+        self,  messages: Union[list[dict], str], config: TextGenerationConfig = TextGenerationConfig(), use_cache=True, **kwargs
     ) -> TextGenerationResponse:
-        config.model = config.model or "command"
-        config.messages = self.format_messages(config.messages)
-
+         
+        messages = self.format_messages(messages)
         self.model_name = config.model
 
         cohere_config = {
-            "model": config.model,
-            "prompt": config.messages,
+            "model": config.model or "command",
+            "prompt": messages,
             "max_tokens": config.max_tokens,
             "temperature": config.temperature,
             "k": config.top_k,
@@ -50,11 +50,10 @@ class CohereTextGenerator(BaseTextGenerator):
             "frequency_penalty": config.frequency_penalty,
             "presence_penalty": config.presence_penalty,
         }
-
-        print(cohere_config)
-
+ 
+        cache_key_params = cohere_config | {"messages": messages}
         if use_cache:
-            response = cache_request(cache=self.cache, params=(cohere_config))
+            response = cache_request(cache=self.cache, params=cache_key_params)
             if response:
                 return TextGenerationResponse(**response)
 
@@ -71,14 +70,11 @@ class CohereTextGenerator(BaseTextGenerator):
         response = TextGenerationResponse(
             text=response_text,
             logprobs=[],  # You may need to extract log probabilities from the response if needed
-            config=config,
+            config=cohere_config,
             usage={},  # You may need to extract usage metrics from the response if needed
         )
 
-        if use_cache:
-            cache_request(
-                cache=self.cache, params=asdict(config), values=(cohere_config)
-            )
+        cache_request(cache=self.cache, params=cache_key_params, values=asdict(response))
         return response
 
     def count_tokens(self, text) -> int:
