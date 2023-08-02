@@ -1,54 +1,65 @@
-from llmx.generators.text.textgen import TextGenerator
+import pytest
+import os
+from llmx.generators.text.textgen import generator
 from llmx.datamodel import TextGenerationConfig
 
 
 config = TextGenerationConfig(
     n=2,
-    temperature=0.01,
+    temperature=0.4,
     max_tokens=100,
     top_p=1.0,
     top_k=50,
     frequency_penalty=0.0,
-    presence_penalty=0.0,
-    messages=[
-        {"role": "user", "content": "What is the height of the Eiffel Tower?"},
-    ],
+    presence_penalty=0.0
 )
+
+messages = [
+    {"role": "user",
+     "content": "What is the capital of France? Only respond with the exact answer"}]
 
 
 def test_openai():
-    openai_gen = TextGenerator(provider="openai")
-    openai_response = openai_gen.generate(config=config, use_cache=False)
+    openai_gen = generator(provider="openai")
+    openai_response = openai_gen.generate(messages, config=config, use_cache=False)
     answer = openai_response.text[0].content
     print(openai_response.text[0].content)
 
-    assert (
-        "324" in answer or "1,063" in answer or "1,063 ft" in answer or "1063" in answer
-    )
+    assert ("paris" in answer.lower())
     assert len(openai_response.text) == 2
 
 
 def test_google():
-    google_gen = TextGenerator(provider="google")
+    google_gen = generator(provider="google")
     config.model = "models/chat-bison-001"
-    google_response = google_gen.generate(config=config, use_cache=False)
+    google_response = google_gen.generate(messages, config=config, use_cache=False)
     answer = google_response.text[0].content
     print(google_response.text[0].content)
 
-    assert (
-        "324" in answer or "1,063" in answer or "1,063 ft" in answer or "1063" in answer
-    )
-    assert len(google_response.text) == 2
+    assert ("paris" in answer.lower())
+    # assert len(google_response.text) == 2 palm may chose to return 1 or 2 responses
 
 
 def test_cohere():
-    cohere_gen = TextGenerator(provider="cohere")
+    cohere_gen = generator(provider="cohere")
     config.model = "command"
-    cohere_response = cohere_gen.generate(config=config, use_cache=False)
+    cohere_response = cohere_gen.generate(messages, config=config, use_cache=False)
     answer = cohere_response.text[0].content
     print(cohere_response.text[0].content)
 
-    assert (
-        "324" in answer or "1,063" in answer or "1,063 ft" in answer or "1063" in answer
-    )
+    assert ("paris" in answer.lower())
     assert len(cohere_response.text) == 2
+
+
+@pytest.mark.skipif("RUNALL" not in os.environ, reason="takes too long")
+def test_hf_local():
+    hf_local_gen = generator(
+        provider="hf",
+        model="TheBloke/Llama-2-7b-chat-fp16",
+        device_map="auto")
+    hf_local_response = hf_local_gen.generate(messages, config=config, use_cache=False)
+    answer = hf_local_response.text[0].content
+    print(hf_local_response.text[0].content)
+
+    assert ("paris" in answer.lower())
+    assert len(hf_local_response.text) == 2
