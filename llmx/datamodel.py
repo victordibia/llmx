@@ -21,16 +21,15 @@ class Message:
 @dataclass
 class TextGenerationConfig:
     n: int = 1
-    temperature: float = 0.5
-    max_tokens: int = None
+    temperature: float = 0.1
+    max_tokens: Union[int, None] = None
     top_p: float = 1.0
     top_k: int = 50
     frequency_penalty: float = 0.0
     presence_penalty: float = 0.0
     model_type: str = "openai"
     model: str = None
-    stop: Union[list[str], str, None] = None
-    messages: Union[list[dict], str, None] = None
+    stop: Union[list[str], str, None] = None 
 
     def __post_init__(self):
         self._fields_dict = asdict(self)

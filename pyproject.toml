@@ -26,7 +26,7 @@ dependencies = [
     "diskcache",
     "cohere", 
 ]
-optional-dependencies = {web = ["fastapi", "uvicorn"], local = ["transformers[torch]>=4.26"]}
+optional-dependencies = {web = ["fastapi", "uvicorn"], transformers = ["transformers[torch]>=4.26"]}
 
 dynamic = ["version"]
 
