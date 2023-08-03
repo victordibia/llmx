@@ -29,7 +29,8 @@ messages = [
 - **Good Utils (e.g., Caching etc)**: E.g. being able to use caching for faster responses. General policy is that cache is used if config (including messages) is the same. If you want to force a new response, set `use_cache=False` in the `generate` call.
 
 ```python
-response = gen.generate(messages=messages, use_cache=True)
+response = gen.generate(messages=messages, config=TextGeneratorConfig(n=1, use_cache=True))
+
 
 # TextGenerationResponse(text=[Message(role='assistant', content="Gravity is like a magical force that pulls things towards each other. It's what keeps us on the ground and stops us from floating away into space. ... ")], config=TextGenerationConfig(n=1, temperature=0.1, max_tokens=8147, top_p=1.0, top_k=50, frequency_penalty=0.0, presence_penalty=0.0, model_type='openai', model='gpt-4', stop=None), logprobs=[], usage={'prompt_tokens': 34, 'completion_tokens': 69, 'total_tokens': 103})
 ```
@@ -95,3 +96,18 @@ See the [tutorial](/notebooks/tutorial.ipynb) for more examples.
 
 - **Prompting**. llmx makes some assumptions around how prompts are constructed e.g., how the chat message interface is assembled into a prompt for each model type. If your application or use case requires more control over the prompt, you may want to use a different library (ideally query the LLM models directly).
 - **Inference Optimization**. This library is not really designed for speed, but more for rapid experimentation using multiple models. If you are looking for a library that is optimized for inference, I'd recommend looking at [vllm](https://github.com/vllm-project/vllm) or [tgi](https://github.com/huggingface/text-generation-inference)
+
+## Citation
+
+If you use this library in your work, please cite:
+
+```bibtex
+@software{victordibiallmx,
+author = {Victor Dibia},
+license = {MIT},
+month =  {10},
+title = {LLMX - An API for Language Models},
+url = {https://github.com/victordibia/llmx},
+year = {2023}
+}
+```
