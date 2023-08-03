@@ -1,7 +1,9 @@
 .vscode
+.release.sh
 llmx/generators/cache
 llmx.egg-info
 notebooks/test.ipynb
+notebooks/data
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
