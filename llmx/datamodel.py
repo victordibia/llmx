@@ -28,7 +28,7 @@ class TextGenerationConfig:
     frequency_penalty: float = 0.0
     presence_penalty: float = 0.0
     model_type: str = "openai"
-    model: str = None
+    model: Optional[str] = None
     stop: Union[list[str], str, None] = None
     use_cache: bool = True
 

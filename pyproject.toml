@@ -20,11 +20,11 @@ classifiers = [
 
 dependencies = [
     "pydantic",
-    "openai", 
-    "google-generativeai",
+    "openai",  
     "tiktoken",
     "diskcache",
     "cohere", 
+    "google.auth"
 ]
 optional-dependencies = {web = ["fastapi", "uvicorn"], transformers = ["transformers[torch]>=4.26"]}
 

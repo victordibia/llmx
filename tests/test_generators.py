@@ -32,7 +32,7 @@ def test_openai():
 
 def test_google():
     google_gen = generator(provider="google")
-    config.model = "models/chat-bison-001"
+    config.model = "chat-bison@001"
     google_response = google_gen.generate(messages, config=config)
     answer = google_response.text[0].content
     print(google_response.text[0].content)

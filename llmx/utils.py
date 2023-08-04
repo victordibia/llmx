@@ -7,6 +7,10 @@ from diskcache import Cache
 import hashlib
 import os
 import platform
+import google.auth
+import google.auth.transport.requests
+from google.oauth2 import service_account
+import requests
 
 logger = logging.getLogger(__name__)
 
@@ -65,3 +69,48 @@ def get_user_cache_dir(app_name: str) -> str:
         )
     os.makedirs(cache_path, exist_ok=True)
     return cache_path
+
+
+def get_gcp_credentials(service_account_key_file: str = None, scopes: list[str] = [
+        'https://www.googleapis.com/auth/cloud-platform']):
+    try:
+        # Attempt to use Application Default Credentials
+        credentials, project_id = google.auth.default(scopes=scopes)
+        auth_req = google.auth.transport.requests.Request()
+        credentials.refresh(auth_req)
+        return credentials
+    except google.auth.exceptions.DefaultCredentialsError:
+        # Fall back to using service account key
+        if service_account_key_file is None:
+            raise ValueError(
+                "Service account key file is not set. Please set the PALM_SERVICE_ACCOUNT_KEY_FILE environment variable."
+            )
+        credentials = service_account.Credentials.from_service_account_file(
+            service_account_key_file, scopes=scopes)
+        auth_req = google.auth.transport.requests.Request()
+        credentials.refresh(auth_req)
+        return credentials
+
+
+def gcp_request(
+    url: str,
+    method: str = "POST",
+    body: dict = None,
+    headers: dict = None,
+    credentials: google.auth.credentials.Credentials = None,
+    **kwargs,
+):
+    if credentials is None:
+        credentials = get_gcp_credentials()
+    auth_req = google.auth.transport.requests.Request()
+    if credentials.expired:
+        credentials.refresh(auth_req)
+    headers = headers or {}
+    headers["Authorization"] = f"Bearer {credentials.token}"
+    headers["Content-Type"] = "application/json"
+
+    response = requests.request(
+        method=method, url=url, json=body, headers=headers, **kwargs
+    )
+    response.raise_for_status()
+    return response.json()

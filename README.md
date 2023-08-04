@@ -34,7 +34,7 @@ response = gen.generate(messages=messages, config=TextGeneratorConfig(n=1, use_c
 
 Output looks like
 
-```python
+```text
 
 TextGenerationResponse(text=[Message(role='assistant', content="Gravity is like a magical force that pulls things towards each other. It's what keeps us on the ground and stops us from floating away into space. ... ")], config=TextGenerationConfig(n=1, temperature=0.1, max_tokens=8147, top_p=1.0, top_k=50, frequency_penalty=0.0, presence_penalty=0.0, model_type='openai', model='gpt-4', stop=None), logprobs=[], usage={'prompt_tokens': 34, 'completion_tokens': 69, 'total_tokens': 103})
 
@@ -63,12 +63,15 @@ Note that you may want to use the latest version of pip to install this package.
 
 ## Usage
 
-Set your api keys first
+Set your api keys first for each service.
 
 ```bash
 export OPENAI_API_KEY=<your key>
 export PALM_API_KEY=<your key>
 export COHERE_API_KEY=<your key>
+export PALM_SERVICE_ACCOUNT_KEY_FILE= <path to your service account key file>
+export PALM_PROJECT_ID=<your gcp project id>
+export PALM_PROJECT_LOCATION=<your project location>
 ```
 
 ```python

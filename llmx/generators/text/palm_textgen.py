@@ -1,27 +1,24 @@
 from dataclasses import asdict
 import os
 from typing import Union
-import google.generativeai as palm
 from .base_textgen import TextGenerator
 from ...datamodel import TextGenerationConfig, TextGenerationResponse, Message
-from ...utils import cache_request, num_tokens_from_messages
+from ...utils import cache_request, gcp_request, num_tokens_from_messages, get_gcp_credentials
 
 
 class PalmTextGenerator(TextGenerator):
     def __init__(
         self,
-        api_key: str = os.environ.get("PALM_API_KEY", None),
+        palm_key_file: str = os.environ.get("PALM_SERVICE_ACCOUNT_KEY_FILE", None),
+        project_id: str = os.environ.get("PALM_PROJECT_ID", None),
+        project_location=os.environ.get("PALM_PROJECT_LOCATION", "us-central1"),
         provider: str = "google",
     ):
         super().__init__(provider=provider)
 
-        if api_key is None:
-            raise ValueError(
-                "Palm API key is not set. Please set the PALM_API_KEY environment variable."
-            )
-
-        palm.configure(api_key=api_key)
-        self.api_key = api_key
+        self.project_id = project_id
+        self.project_location = project_location
+        self.credentials = get_gcp_credentials(palm_key_file)
 
     def format_messages(self, messages):
         palm_messages = []
@@ -44,38 +41,48 @@ class PalmTextGenerator(TextGenerator):
             **kwargs) -> TextGenerationResponse:
 
         use_cache = config.use_cache
-        model = config.model or "models/chat-bison-001"
-        self.model_name = model
+        model = config.model or "codechat-bison"
         system_messages, messages = self.format_messages(messages)
+        self.model_name = model
+
+        api_url = f"https://us-central1-aiplatform.googleapis.com/v1/projects/{self.project_id}/locations/{self.project_location}/publishers/google/models/{model}:predict"
+
+#  'candidateCount': max(1, min(8, config.n)),  # 1 <= n <= 8,
+# 'topP': config.top_p,
+#                 'topK': config.top_k,
+
         palm_config = {
-            "model": model,
-            "context": system_messages,
-            "examples": None,
-            "candidate_count": max(1, min(8, config.n)),  # 1 <= n <= 8
-            "temperature": config.temperature,
-            "top_p": config.top_p,
-            "top_k": config.top_k,
-            "messages": messages,
+            'temperature': config.temperature,
+            'maxOutputTokens': config.max_tokens}
+        palm_payload = {
+            'instances': [
+                {'messages': messages,
+                 'context': system_messages,
+                 'examples': [],
+                 }
+            ],
+            'parameters': palm_config
         }
-        print("*********", messages)
-        cache_key_params = palm_config | {"messages": messages}
+        # print("*********", palm_payload)
+
+        palm_response = gcp_request(
+            url=api_url,
+            body=palm_payload,
+            method="POST",
+            credentials=self.credentials)
+
+        cache_key_params = palm_payload
         if use_cache:
             response = cache_request(cache=self.cache, params=cache_key_params)
             if response:
                 return TextGenerationResponse(**response)
 
-        try:
-            palm_response = palm.chat(**palm_config)
-        except Exception as e:
-            raise ValueError(f"Error generating text: {e}")
-
-        print("** response **", palm_response)
         response_text = [
             Message(
                 role="assistant" if x["author"] == "1" else x["author"],
                 content=x["content"],
             )
-            for x in palm_response.candidates
+            for x in palm_response["predictions"][0]["candidates"]
         ]
 
         response = TextGenerationResponse(
@@ -84,7 +91,7 @@ class PalmTextGenerator(TextGenerator):
             config=palm_config,
             usage={
                 "total_tokens": num_tokens_from_messages(
-                    response_text, model=palm_config["model"]
+                    response_text, model=self.model_name
                 )
             },
         )
