@@ -1,5 +1,5 @@
 from typing import Union
-from .base_textgen import BaseTextGenerator
+from .base_textgen import TextGenerator
 from ...datamodel import TextGenerationConfig, TextGenerationResponse, Message
 from ...utils import cache_request, num_tokens_from_messages
 import os
@@ -7,7 +7,7 @@ import cohere
 from dataclasses import asdict
 
 
-class CohereTextGenerator(BaseTextGenerator):
+class CohereTextGenerator(TextGenerator):
     def __init__(
         self,
         api_key: str = os.environ.get("COHERE_API_KEY", None),
@@ -32,9 +32,12 @@ class CohereTextGenerator(BaseTextGenerator):
         return prompt
 
     def generate(
-        self,  messages: Union[list[dict], str], config: TextGenerationConfig = TextGenerationConfig(), use_cache=True, **kwargs
-    ) -> TextGenerationResponse:
-         
+            self, messages: Union[list[dict],
+                                  str],
+            config: TextGenerationConfig = TextGenerationConfig(),
+            **kwargs) -> TextGenerationResponse:
+
+        use_cache = config.use_cache
         messages = self.format_messages(messages)
         self.model_name = config.model
 
@@ -50,7 +53,7 @@ class CohereTextGenerator(BaseTextGenerator):
             "frequency_penalty": config.frequency_penalty,
             "presence_penalty": config.presence_penalty,
         }
- 
+
         cache_key_params = cohere_config | {"messages": messages}
         if use_cache:
             response = cache_request(cache=self.cache, params=cache_key_params)

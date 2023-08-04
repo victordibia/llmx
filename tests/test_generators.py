@@ -1,6 +1,6 @@
 import pytest
 import os
-from llmx.generators.text.textgen import generator
+from llmx import text_generator as generator
 from llmx.datamodel import TextGenerationConfig
 
 
@@ -11,7 +11,8 @@ config = TextGenerationConfig(
     top_p=1.0,
     top_k=50,
     frequency_penalty=0.0,
-    presence_penalty=0.0
+    presence_penalty=0.0,
+    use_cache=False
 )
 
 messages = [
@@ -21,7 +22,7 @@ messages = [
 
 def test_openai():
     openai_gen = generator(provider="openai")
-    openai_response = openai_gen.generate(messages, config=config, use_cache=False)
+    openai_response = openai_gen.generate(messages, config=config)
     answer = openai_response.text[0].content
     print(openai_response.text[0].content)
 
@@ -32,7 +33,7 @@ def test_openai():
 def test_google():
     google_gen = generator(provider="google")
     config.model = "models/chat-bison-001"
-    google_response = google_gen.generate(messages, config=config, use_cache=False)
+    google_response = google_gen.generate(messages, config=config)
     answer = google_response.text[0].content
     print(google_response.text[0].content)
 
@@ -43,7 +44,7 @@ def test_google():
 def test_cohere():
     cohere_gen = generator(provider="cohere")
     config.model = "command"
-    cohere_response = cohere_gen.generate(messages, config=config, use_cache=False)
+    cohere_response = cohere_gen.generate(messages, config=config)
     answer = cohere_response.text[0].content
     print(cohere_response.text[0].content)
 
@@ -57,7 +58,7 @@ def test_hf_local():
         provider="hf",
         model="TheBloke/Llama-2-7b-chat-fp16",
         device_map="auto")
-    hf_local_response = hf_local_gen.generate(messages, config=config, use_cache=False)
+    hf_local_response = hf_local_gen.generate(messages, config=config)
     answer = hf_local_response.text[0].content
     print(hf_local_response.text[0].content)
 

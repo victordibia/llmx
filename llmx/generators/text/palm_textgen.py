@@ -2,12 +2,12 @@ from dataclasses import asdict
 import os
 from typing import Union
 import google.generativeai as palm
-from .base_textgen import BaseTextGenerator
+from .base_textgen import TextGenerator
 from ...datamodel import TextGenerationConfig, TextGenerationResponse, Message
 from ...utils import cache_request, num_tokens_from_messages
 
 
-class PalmTextGenerator(BaseTextGenerator):
+class PalmTextGenerator(TextGenerator):
     def __init__(
         self,
         api_key: str = os.environ.get("PALM_API_KEY", None),
@@ -41,7 +41,9 @@ class PalmTextGenerator(BaseTextGenerator):
             self, messages: Union[list[dict],
                                   str],
             config: TextGenerationConfig = TextGenerationConfig(),
-            use_cache=True, **kwargs) -> TextGenerationResponse:
+            **kwargs) -> TextGenerationResponse:
+
+        use_cache = config.use_cache
         model = config.model or "models/chat-bison-001"
         self.model_name = model
         system_messages, messages = self.format_messages(messages)
@@ -55,7 +57,7 @@ class PalmTextGenerator(BaseTextGenerator):
             "top_k": config.top_k,
             "messages": messages,
         }
-        # print("*********", config)
+        print("*********", messages)
         cache_key_params = palm_config | {"messages": messages}
         if use_cache:
             response = cache_request(cache=self.cache, params=cache_key_params)
@@ -67,6 +69,7 @@ class PalmTextGenerator(BaseTextGenerator):
         except Exception as e:
             raise ValueError(f"Error generating text: {e}")
 
+        print("** response **", palm_response)
         response_text = [
             Message(
                 role="assistant" if x["author"] == "1" else x["author"],

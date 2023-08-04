@@ -6,7 +6,8 @@ from ...datamodel import TextGenerationConfig, TextGenerationResponse
 from ...version import APP_NAME
 from abc import ABC, abstractmethod
 
-class BaseTextGenerator(ABC):
+
+class TextGenerator(ABC):
 
     def __init__(self, provider: str = "openai", **kwargs):
         self.provider = provider
@@ -20,8 +21,10 @@ class BaseTextGenerator(ABC):
 
     @abstractmethod
     def generate(
-        self, messages: Union[list[dict], str], config: TextGenerationConfig = TextGenerationConfig(), use_cache=True, **kwargs
-    ) -> TextGenerationResponse:
+            self, messages: Union[list[dict],
+                                  str],
+            config: TextGenerationConfig = TextGenerationConfig(),
+            **kwargs) -> TextGenerationResponse:
         pass
 
     @abstractmethod

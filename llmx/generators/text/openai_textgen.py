@@ -1,5 +1,5 @@
 from typing import Union
-from .base_textgen import BaseTextGenerator
+from .base_textgen import TextGenerator
 from ...datamodel import TextGenerationConfig, TextGenerationResponse
 from ...utils import cache_request, num_tokens_from_messages
 import os
@@ -20,7 +20,7 @@ context_lengths = {
 }
 
 
-class OpenAITextGenerator(BaseTextGenerator):
+class OpenAITextGenerator(TextGenerator):
     def __init__(
         self,
         api_key: str = os.environ.get("OPENAI_API_KEY", None),
@@ -38,10 +38,13 @@ class OpenAITextGenerator(BaseTextGenerator):
         self.api_key = api_key
 
     def generate(
-        self,  messages: Union[list[dict], str], config: TextGenerationConfig = TextGenerationConfig(), use_cache=True, **kwargs
-    ) -> TextGenerationResponse:
+            self, messages: Union[list[dict],
+                                  str],
+            config: TextGenerationConfig = TextGenerationConfig(),
+            **kwargs) -> TextGenerationResponse:
 
-        model = config.model  or "gpt-3.5-turbo-0301"
+        use_cache = config.use_cache
+        model = config.model or "gpt-3.5-turbo-0301"
         prompt_tokens = num_tokens_from_messages(messages)
         max_tokens = max(context_lengths.get(model, 4096) - prompt_tokens - 10, 200)
 
@@ -55,15 +58,14 @@ class OpenAITextGenerator(BaseTextGenerator):
             "n": config.n,
             "messages": messages,
         }
-         
+
         self.model_name = model
-        cache_key_params = (oai_config) | {"messages": messages} 
+        cache_key_params = (oai_config) | {"messages": messages}
         if use_cache:
             response = cache_request(cache=self.cache, params=cache_key_params)
             if response:
                 return TextGenerationResponse(**response)
 
-        
         oai_response = openai.ChatCompletion.create(**oai_config)
 
         response = TextGenerationResponse(

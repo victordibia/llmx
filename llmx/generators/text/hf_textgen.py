@@ -4,7 +4,7 @@ from transformers import (AutoTokenizer, AutoModelForCausalLM, GenerationConfig)
 import torch
 
 
-from .base_textgen import BaseTextGenerator
+from .base_textgen import TextGenerator
 from ...datamodel import TextGenerationConfig, TextGenerationResponse
 from ...utils import cache_request
 
@@ -88,7 +88,7 @@ class DialogueTemplate:
             )
 
 
-class HFTextGenerator(BaseTextGenerator):
+class HFTextGenerator(TextGenerator):
     def __init__(self, provider: str = "huggingface", device_map=None, **kwargs):
 
         super().__init__(provider=provider)
@@ -154,7 +154,8 @@ class HFTextGenerator(BaseTextGenerator):
             self, messages: Union[list[dict],
                                   str],
             config: TextGenerationConfig = TextGenerationConfig(),
-            use_cache=True, **kwargs) -> TextGenerationResponse:
+            **kwargs) -> TextGenerationResponse:
+        use_cache = config.use_cache
         config.model = self.model_name
         cache_key_params = {
             **asdict(config),

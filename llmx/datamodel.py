@@ -29,7 +29,8 @@ class TextGenerationConfig:
     presence_penalty: float = 0.0
     model_type: str = "openai"
     model: str = None
-    stop: Union[list[str], str, None] = None 
+    stop: Union[list[str], str, None] = None
+    use_cache: bool = True
 
     def __post_init__(self):
         self._fields_dict = asdict(self)
