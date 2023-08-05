@@ -177,12 +177,12 @@ class HFTextGenerator(TextGenerator):
         max_new_tokens = kwargs.get(
             "max_new_tokens", self.max_context_tokens - input_ids.shape[-1]
         )
-        print(
-            "Prompt tokens: ",
-            input_ids.shape[-1],
-            " | Max new tokens: ",
-            max_new_tokens,
-        )
+        # print(
+        #     "Prompt tokens: ",
+        #     input_ids.shape[-1],
+        #     " | Max new tokens: ",
+        #     max_new_tokens,
+        # )
 
         top_k = kwargs.get("top_k", config.top_k)
         min_new_tokens = kwargs.get("min_new_tokens", 32)

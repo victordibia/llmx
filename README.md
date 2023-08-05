@@ -11,13 +11,13 @@ There is nothing special about this library, but some of the requirements I need
 ```python
 from llmx import  text_generator as generator
 
-openai_generator = generator(provider="openai")
-palm_generator = generator(provider="google") # or palm
-cohere_generator = generator(provider="cohere") # or palm
-hf_generator = generator(provider="huggingface") # run locally
+gen = generator(provider="openai") # openai is default
+gen = generator(provider="google") # or palm
+gen = generator(provider="cohere") # or palm
+gen = generator(provider="hf", model="TheBloke/Llama-2-7b-chat-fp16", device_map="auto") # run huggingface model locally
 ```
 
-- **Unified Messaging Interface**. Standardizes on the OpenAI ChatML format. For example, the standard prompt sent a model is formatted as an array of objects, where each object has a role (`system`, `user`, or `assistant`) and content of the form. A single request is list one only one message (e.g., write code to plot a cosine wave signal). A conversation is a list of messages e.g. write code for x, update the axis to y, etc. For all models.
+- **Unified Messaging Interface**. Standardizes on the OpenAI ChatML message format and is designed for _chat finetuned_ models. For example, the standard prompt sent a model is formatted as an array of objects, where each object has a role (`system`, `user`, or `assistant`) and content (see below). A single request is list of only one message (e.g., write code to plot a cosine wave signal). A conversation is a list of messages e.g. write code for x, update the axis to y, etc. Same format for all models.
 
 ```python
 messages = [
