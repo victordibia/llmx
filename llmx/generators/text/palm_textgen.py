@@ -27,11 +27,20 @@ class PalmTextGenerator(TextGenerator):
             if message["role"] == "system":
                 system_messages += message["content"] + "\n"
             else:
-                palm_message = {
-                    "author": message["role"],
-                    "content": message["content"],
-                }
-                palm_messages.append(palm_message)
+                if not palm_messages or palm_messages[-1]['author'] != message['role']:
+                    palm_message = {
+                        "author": message["role"],
+                        "content": message["content"],
+                    }
+                    palm_messages.append(palm_message)
+                else:
+                    palm_messages[-1]['content'] += '\n' + message['content']
+
+        if palm_messages and len(palm_messages) % 2 == 0:
+            merged_content = palm_messages[-2]['content'] + '\n' + palm_messages[-1]['content']
+            palm_messages[-2]['content'] = merged_content
+            palm_messages.pop()
+
         return system_messages, palm_messages
 
     def generate(
@@ -45,6 +54,8 @@ class PalmTextGenerator(TextGenerator):
         system_messages, messages = self.format_messages(messages)
         self.model_name = model
 
+        print("*********", messages)
+
         api_url = f"https://us-central1-aiplatform.googleapis.com/v1/projects/{self.project_id}/locations/{self.project_location}/publishers/google/models/{model}:predict"
 
 #  'candidateCount': max(1, min(8, config.n)),  # 1 <= n <= 8,
@@ -53,7 +64,7 @@ class PalmTextGenerator(TextGenerator):
 
         palm_config = {
             'temperature': config.temperature,
-            'maxOutputTokens': config.max_tokens}
+            'maxOutputTokens': config.max_tokens or 2040}
         palm_payload = {
             'instances': [
                 {'messages': messages,
@@ -63,19 +74,19 @@ class PalmTextGenerator(TextGenerator):
             ],
             'parameters': palm_config
         }
-        # print("*********", palm_payload)
-
-        palm_response = gcp_request(
-            url=api_url,
-            body=palm_payload,
-            method="POST",
-            credentials=self.credentials)
+        # print("*********", use_cache, palm_payload)
 
         cache_key_params = palm_payload
         if use_cache:
             response = cache_request(cache=self.cache, params=cache_key_params)
             if response:
                 return TextGenerationResponse(**response)
+
+        palm_response = gcp_request(
+            url=api_url,
+            body=palm_payload,
+            method="POST",
+            credentials=self.credentials)
 
         response_text = [
             Message(

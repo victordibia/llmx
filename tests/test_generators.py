@@ -52,7 +52,7 @@ def test_cohere():
     assert len(cohere_response.text) == 2
 
 
-@pytest.mark.skipif("RUNALL" not in os.environ, reason="takes too long")
+@pytest.mark.skipif(os.environ.get("LLMX_RUNALL", None) == "False", reason="takes too long")
 def test_hf_local():
     hf_local_gen = generator(
         provider="hf",

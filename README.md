@@ -69,6 +69,8 @@ Set your api keys first for each service.
 export OPENAI_API_KEY=<your key>
 export PALM_API_KEY=<your key>
 export COHERE_API_KEY=<your key>
+
+# for palm ..
 export PALM_SERVICE_ACCOUNT_KEY_FILE= <path to your service account key file>
 export PALM_PROJECT_ID=<your gcp project id>
 export PALM_PROJECT_LOCATION=<your project location>

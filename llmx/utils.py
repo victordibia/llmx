@@ -112,5 +112,14 @@ def gcp_request(
     response = requests.request(
         method=method, url=url, json=body, headers=headers, **kwargs
     )
-    response.raise_for_status()
+
+    if response.status_code not in range(200, 300):
+        try:
+            error_message = response.json().get("error", {}).get("message", "")
+        except json.JSONDecodeError:
+            error_message = response.content
+        raise Exception(
+            f"Request failed with status code {response.status_code}: {error_message}"
+        )
+
     return response.json()

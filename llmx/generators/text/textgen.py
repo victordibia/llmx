@@ -4,13 +4,13 @@ from .cohere_textgen import CohereTextGenerator
 
 
 def text_generator(provider: str = "openai", **kwargs):
-    if provider == "openai" or provider == "default":
+    if provider.lower() == "openai" or provider.lower() == "default":
         return OpenAITextGenerator(**kwargs)
-    elif provider == "palm" or provider == "google":
+    elif provider.lower() == "palm" or provider.lower() == "google":
         return PalmTextGenerator(provider=provider, **kwargs)
-    elif provider == "cohere":
+    elif provider.lower() == "cohere":
         return CohereTextGenerator(provider=provider, **kwargs)
-    elif provider == "hf" or provider == "huggingface":
+    elif provider.lower() == "hf" or provider.lower() == "huggingface":
         try:
             import transformers
             from transformers import (
