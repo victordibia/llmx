@@ -54,7 +54,7 @@ class PalmTextGenerator(TextGenerator):
         system_messages, messages = self.format_messages(messages)
         self.model_name = model
 
-        print("*********", messages)
+        # print("*********", messages)
 
         api_url = f"https://us-central1-aiplatform.googleapis.com/v1/projects/{self.project_id}/locations/{self.project_location}/publishers/google/models/{model}:predict"
 

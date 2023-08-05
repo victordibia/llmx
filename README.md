@@ -1,8 +1,8 @@
-# LLMX - An API for Language Models
+# LLMX - An API for Chat Fine-Tuned Language Models
 
 [![PyPI version](https://badge.fury.io/py/llmx.svg)](https://badge.fury.io/py/llmx)
 
-A simple python package that provides a unified interface to several LLM providers [ OpenAI (default), PaLM, Cohere and local HuggingFace Models ].
+A simple python package that provides a unified interface to several LLM providers of chat-finetuned models [ OpenAI (default), PaLM, Cohere and local HuggingFace Models ].
 
 There is nothing special about this library, but some of the requirements I needed when I startec building this (that other libraries did not have):
 
@@ -44,7 +44,7 @@ Are there other libraries that do things like this really well? Yes! I'd recomme
 
 ## Installation
 
-Install from pypi. Please use python3.9 or higher.
+Install from pypi. Please use **python3.10** or higher.
 
 ```bash
 pip install llmx
@@ -116,7 +116,7 @@ If you use this library in your work, please cite:
 author = {Victor Dibia},
 license = {MIT},
 month =  {10},
-title = {LLMX - An API for Language Models},
+title = {LLMX - An API for Chat Fine-Tuned Language Models},
 url = {https://github.com/victordibia/llmx},
 year = {2023}
 }
