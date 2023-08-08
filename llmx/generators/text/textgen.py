@@ -3,7 +3,7 @@ from .palm_textgen import PalmTextGenerator
 from .cohere_textgen import CohereTextGenerator
 
 
-def text_generator(provider: str = "openai", **kwargs):
+def llm(provider: str = "openai", **kwargs):
     if provider.lower() == "openai" or provider.lower() == "default":
         return OpenAITextGenerator(**kwargs)
     elif provider.lower() == "palm" or provider.lower() == "google":

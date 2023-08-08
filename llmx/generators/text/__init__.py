@@ -1,1 +1,1 @@
-from .textgen import text_generator
+from .textgen import llm
