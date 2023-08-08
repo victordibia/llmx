@@ -1,6 +1,6 @@
 import pytest
 import os
-from llmx import text_generator as generator
+from llmx import llm
 from llmx.datamodel import TextGenerationConfig
 
 
@@ -21,7 +21,7 @@ messages = [
 
 
 def test_openai():
-    openai_gen = generator(provider="openai")
+    openai_gen = llm(provider="openai")
     openai_response = openai_gen.generate(messages, config=config)
     answer = openai_response.text[0].content
     print(openai_response.text[0].content)
@@ -31,7 +31,7 @@ def test_openai():
 
 
 def test_google():
-    google_gen = generator(provider="google")
+    google_gen = llm(provider="google")
     config.model = "chat-bison@001"
     google_response = google_gen.generate(messages, config=config)
     answer = google_response.text[0].content
@@ -42,7 +42,7 @@ def test_google():
 
 
 def test_cohere():
-    cohere_gen = generator(provider="cohere")
+    cohere_gen = llm(provider="cohere")
     config.model = "command"
     cohere_response = cohere_gen.generate(messages, config=config)
     answer = cohere_response.text[0].content
@@ -55,7 +55,7 @@ def test_cohere():
 @pytest.mark.skipif(os.environ.get("LLMX_RUNALL", None) is None
                     or os.environ.get("LLMX_RUNALL", None) == "False", reason="takes too long")
 def test_hf_local():
-    hf_local_gen = generator(
+    hf_local_gen = llm(
         provider="hf",
         model="TheBloke/Llama-2-7b-chat-fp16",
         device_map="auto")

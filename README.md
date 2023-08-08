@@ -2,7 +2,9 @@
 
 [![PyPI version](https://badge.fury.io/py/llmx.svg)](https://badge.fury.io/py/llmx)
 
-A simple python package that provides a unified interface to several LLM providers of chat-finetuned models [ OpenAI (default), PaLM, Cohere and local HuggingFace Models].
+A simple python package that provides a unified interface to several LLM providers of chat fine-tuned models [OpenAI (default), PaLM, Cohere and local HuggingFace Models].
+
+> LLMx wraps multiple api providers and its interface may change as the general field of LLMs evolve.
 
 There is nothing particularly special about this library, but some of the requirements I needed when I started building this (that other libraries did not have):
 
@@ -66,21 +68,21 @@ Note that you may want to use the latest version of pip to install this package.
 Set your api keys first for each service.
 
 ```bash
+# for openai and cohere
 export OPENAI_API_KEY=<your key>
-export PALM_API_KEY=<your key>
 export COHERE_API_KEY=<your key>
 
-# for palm ..
+# for PaLM (Vertex AI), setup a gcp project, and get a service account key file
 export PALM_SERVICE_ACCOUNT_KEY_FILE= <path to your service account key file>
 export PALM_PROJECT_ID=<your gcp project id>
 export PALM_PROJECT_LOCATION=<your project location>
 ```
 
 ```python
-from llmx import  text_generator as generator
+from llmx import llm
 from llmx.datamodel import TextGenerationConfig
 
-messages =  messages = [
+messages = [
     {"role": "system", "content": "You are a helpful assistant that can explain concepts clearly to a 6 year old child."},
     {"role": "user", "content": "What is  gravity?"}
 ]
@@ -105,7 +107,7 @@ See the [tutorial](/notebooks/tutorial.ipynb) for more examples.
 ## Caveats
 
 - **Prompting**. llmx makes some assumptions around how prompts are constructed e.g., how the chat message interface is assembled into a prompt for each model type. If your application or use case requires more control over the prompt, you may want to use a different library (ideally query the LLM models directly).
-- **Inference Optimization**. This library is not really designed for speed, but more for rapid experimentation using multiple models. If you are looking for a library that is optimized for inference, I'd recommend looking at [vllm](https://github.com/vllm-project/vllm) or [tgi](https://github.com/huggingface/text-generation-inference)
+- **Inference Optimization**. This library is not really designed for speed, but more for rapid experimentation using multiple models. If you are looking for a library that is optimized for inference (tensor parrelization, distributed inference etc), I'd recommend looking at [vllm](https://github.com/vllm-project/vllm) or [tgi](https://github.com/huggingface/text-generation-inference)
 
 ## Citation
 
