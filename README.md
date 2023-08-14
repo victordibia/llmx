@@ -4,7 +4,8 @@
 
 A simple python package that provides a unified interface to several LLM providers of chat fine-tuned models [OpenAI (default), PaLM, Cohere and local HuggingFace Models].
 
-> LLMx wraps multiple api providers and its interface may change as the general field of LLMs evolve.
+> **Note**
+> LLMx wraps multiple api providers and its interface _may_ change as the providers as well as the general field of LLMs evolve.
 
 There is nothing particularly special about this library, but some of the requirements I needed when I started building this (that other libraries did not have):
 
@@ -38,7 +39,7 @@ Output looks like
 
 ```text
 
-TextGenerationResponse(text=[Message(role='assistant', content="Gravity is like a magical force that pulls things towards each other. It's what keeps us on the ground and stops us from floating away into space. ... ")], config=TextGenerationConfig(n=1, temperature=0.1, max_tokens=8147, top_p=1.0, top_k=50, frequency_penalty=0.0, presence_penalty=0.0, model_type='openai', model='gpt-4', stop=None), logprobs=[], usage={'prompt_tokens': 34, 'completion_tokens': 69, 'total_tokens': 103})
+TextGenerationResponse(text=[Message(role='assistant', content="Gravity is like a magical force that pulls things towards each other. It's what keeps us on the ground and stops us from floating away into space. ... ")], config=TextGenerationConfig(n=1, temperature=0.1, max_tokens=8147, top_p=1.0, top_k=50, frequency_penalty=0.0, presence_penalty=0.0, provider='openai', model='gpt-4', stop=None), logprobs=[], usage={'prompt_tokens': 34, 'completion_tokens': 69, 'total_tokens': 103})
 
 ```
 
