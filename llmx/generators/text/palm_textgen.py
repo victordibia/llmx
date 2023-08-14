@@ -4,6 +4,7 @@ from typing import Union
 from .base_textgen import TextGenerator
 from ...datamodel import TextGenerationConfig, TextGenerationResponse, Message
 from ...utils import cache_request, gcp_request, num_tokens_from_messages, get_gcp_credentials
+from ..text.providers import providers
 
 
 class PalmTextGenerator(TextGenerator):
@@ -19,6 +20,7 @@ class PalmTextGenerator(TextGenerator):
         self.project_id = project_id
         self.project_location = project_location
         self.credentials = get_gcp_credentials(palm_key_file)
+        self.model_list = providers[provider]["models"]
 
     def format_messages(self, messages):
         palm_messages = []
@@ -58,13 +60,11 @@ class PalmTextGenerator(TextGenerator):
 
         api_url = f"https://us-central1-aiplatform.googleapis.com/v1/projects/{self.project_id}/locations/{self.project_location}/publishers/google/models/{model}:predict"
 
-#  'candidateCount': max(1, min(8, config.n)),  # 1 <= n <= 8,
-# 'topP': config.top_p,
-#                 'topK': config.top_k,
-
+        max_tokens = self.model_list[config.model] if model in self.model_list else 1024
         palm_config = {
             'temperature': config.temperature,
-            'maxOutputTokens': config.max_tokens or 2040}
+            'maxOutputTokens': config.max_tokens or max_tokens
+        }
         palm_payload = {
             'instances': [
                 {'messages': messages,

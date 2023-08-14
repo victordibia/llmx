@@ -58,7 +58,6 @@ class OpenAITextGenerator(TextGenerator):
             "n": config.n,
             "messages": messages,
         }
-
         self.model_name = model
         cache_key_params = (oai_config) | {"messages": messages}
         if use_cache:
