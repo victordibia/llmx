@@ -89,7 +89,7 @@ class DialogueTemplate:
 
 
 class HFTextGenerator(TextGenerator):
-    def __init__(self, provider: str = "huggingface", device_map=None, **kwargs):
+    def __init__(self, provider: str = "huggingface", device_map="auto", **kwargs):
 
         super().__init__(provider=provider)
 
