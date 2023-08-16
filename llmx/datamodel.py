@@ -27,7 +27,7 @@ class TextGenerationConfig:
     top_k: int = 50
     frequency_penalty: float = 0.0
     presence_penalty: float = 0.0
-    provider: str = "openai"
+    provider: Union[str, None] = None
     model: Optional[str] = None
     stop: Union[List[str], str, None] = None
     use_cache: bool = True

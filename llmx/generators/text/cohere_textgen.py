@@ -58,7 +58,7 @@ class CohereTextGenerator(TextGenerator):
             "presence_penalty": config.presence_penalty,
         }
 
-        print("calling cohere ***************", config)
+        # print("calling cohere ***************", config)
 
         cache_key_params = cohere_config | {"messages": messages}
         if use_cache:

@@ -5,7 +5,7 @@
 A simple python package that provides a unified interface to several LLM providers of chat fine-tuned models [OpenAI (default), PaLM, Cohere and local HuggingFace Models].
 
 > **Note**
-> LLMx wraps multiple api providers and its interface _may_ change as the providers as well as the general field of LLMs evolve.
+> llmx wraps multiple api providers and its interface _may_ change as the providers as well as the general field of LLMs evolve.
 
 There is nothing particularly special about this library, but some of the requirements I needed when I started building this (that other libraries did not have):
 

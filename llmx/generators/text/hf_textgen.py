@@ -178,7 +178,7 @@ class HFTextGenerator(TextGenerator):
             "max_new_tokens", self.max_context_tokens - input_ids.shape[-1]
         )
         # print(
-        #     "Prompt tokens: ",
+        #     "***********Prompt tokens: ",
         #     input_ids.shape[-1],
         #     " | Max new tokens: ",
         #     max_new_tokens,
@@ -207,7 +207,7 @@ class HFTextGenerator(TextGenerator):
             generated_ids, skip_special_tokens=False
         )
 
-        # print(text_response)
+        # print(text_response, "*************")
         prompt_tokens = len(batch["input_ids"][0])
         total_tokens = 0
         for row in generated_ids:
