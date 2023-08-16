@@ -27,7 +27,7 @@ dependencies = [
     "google.auth",
     "typer"
 ]
-optional-dependencies = {web = ["fastapi", "uvicorn"], transformers = ["transformers[torch]>=4.26", "protobuf==3.9.2"]}
+optional-dependencies = {web = ["fastapi", "uvicorn"], transformers = ["transformers[torch]>=4.26"]}
 
 dynamic = ["version"]
 
