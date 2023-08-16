@@ -44,3 +44,5 @@ providers = {
         ],
     }
 }
+
+# providers["palm"] = providers["google"]

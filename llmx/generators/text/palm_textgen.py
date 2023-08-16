@@ -20,7 +20,7 @@ class PalmTextGenerator(TextGenerator):
         self.project_id = project_id
         self.project_location = project_location
         self.credentials = get_gcp_credentials(palm_key_file)
-        self.model_list = providers[provider]["models"]
+        self.model_list = providers[provider]["models"] if provider in providers else {}
 
     def format_messages(self, messages):
         palm_messages = []

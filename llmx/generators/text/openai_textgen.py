@@ -1,6 +1,6 @@
-from typing import Union
+from typing import Union, List
 from .base_textgen import TextGenerator
-from ...datamodel import TextGenerationConfig, TextGenerationResponse
+from ...datamodel import Message, TextGenerationConfig, TextGenerationResponse
 from ...utils import cache_request, num_tokens_from_messages
 import os
 import openai
@@ -38,7 +38,7 @@ class OpenAITextGenerator(TextGenerator):
         self.api_key = api_key
 
     def generate(
-            self, messages: Union[list[dict],
+            self, messages: Union[List[dict],
                                   str],
             config: TextGenerationConfig = TextGenerationConfig(),
             **kwargs) -> TextGenerationResponse:
@@ -68,7 +68,7 @@ class OpenAITextGenerator(TextGenerator):
         oai_response = openai.ChatCompletion.create(**oai_config)
 
         response = TextGenerationResponse(
-            text=[dict(x.message) for x in oai_response.choices],
+            text=[Message(**x.message) for x in oai_response.choices],
             logprobs=[],
             config=oai_config,
             usage=dict(oai_response.usage),

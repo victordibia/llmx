@@ -10,7 +10,7 @@ authors = [
 description = "LLMX: A library for LLM Text Generation"
 readme = "README.md"
 license = { file="LICENSE" }
-requires-python = ">=3.10"
+requires-python = ">=3.9"
 classifiers = [
     "Programming Language :: Python :: 3",
     "License :: OSI Approved :: MIT License",
@@ -24,9 +24,10 @@ dependencies = [
     "tiktoken",
     "diskcache",
     "cohere", 
-    "google.auth"
+    "google.auth",
+    "typer"
 ]
-optional-dependencies = {web = ["fastapi", "uvicorn"], transformers = ["transformers[torch]>=4.26"]}
+optional-dependencies = {web = ["fastapi", "uvicorn"], transformers = ["transformers[torch]>=4.26", "protobuf==3.9.2"]}
 
 dynamic = ["version"]
 

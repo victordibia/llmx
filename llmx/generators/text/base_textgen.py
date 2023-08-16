@@ -1,5 +1,5 @@
 import os
-from typing import Union
+from typing import Union, List, Dict
 from diskcache import Cache
 from ...utils import get_user_cache_dir
 from ...datamodel import TextGenerationConfig, TextGenerationResponse
@@ -21,7 +21,7 @@ class TextGenerator(ABC):
 
     @abstractmethod
     def generate(
-            self, messages: Union[list[dict],
+            self, messages: Union[List[Dict],
                                   str],
             config: TextGenerationConfig = TextGenerationConfig(),
             **kwargs) -> TextGenerationResponse:

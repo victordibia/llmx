@@ -1,5 +1,5 @@
 from dataclasses import asdict
-from typing import Any, Optional, Union
+from typing import Any, Optional, Union, List
 from pydantic.dataclasses import dataclass
 
 
@@ -29,7 +29,7 @@ class TextGenerationConfig:
     presence_penalty: float = 0.0
     provider: str = "openai"
     model: Optional[str] = None
-    stop: Union[list[str], str, None] = None
+    stop: Union[List[str], str, None] = None
     use_cache: bool = True
 
     def __post_init__(self):
@@ -43,8 +43,8 @@ class TextGenerationConfig:
 class TextGenerationResponse:
     """Response from a text generation"""
 
-    text: list[Message]
-    config: TextGenerationConfig
+    text: List[Message]
+    config: Any
     logprobs: Optional[Any] = None
     usage: Optional[Any] = None
 

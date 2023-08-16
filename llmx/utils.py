@@ -2,7 +2,7 @@ from dataclasses import asdict
 import sys
 import logging
 import json
-from typing import Any
+from typing import Any, Union, Dict
 import tiktoken
 from diskcache import Cache
 import hashlib
@@ -42,7 +42,7 @@ def num_tokens_from_messages(messages, model="gpt-3.5-turbo-0301"):
         return num_tokens
 
 
-def cache_request(cache: Cache, params: dict, values: dict | None = None) -> Any:
+def cache_request(cache: Cache, params: dict, values: Union[Dict, None] = None) -> Any:
     # Generate a unique key for the request
 
     key = hashlib.md5(json.dumps(params, sort_keys=True).encode("utf-8")).hexdigest()
