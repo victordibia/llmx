@@ -1,2 +1,2 @@
-VERSION = "0.0.9a"
+VERSION = "0.0.10a"
 APP_NAME = "llmx"
