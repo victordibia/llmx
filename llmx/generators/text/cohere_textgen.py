@@ -12,10 +12,11 @@ from ..text.providers import providers
 class CohereTextGenerator(TextGenerator):
     def __init__(
         self,
-        api_key: str = os.environ.get("COHERE_API_KEY", None),
+        api_key: str = None,
         provider: str = "cohere",
     ):
         super().__init__(provider=provider)
+        api_key = api_key or os.environ.get("COHERE_API_KEY", None)
         if api_key is None:
             raise ValueError(
                 "Cohere API key is not set. Please set the COHERE_API_KEY environment variable."

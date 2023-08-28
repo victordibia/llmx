@@ -26,8 +26,13 @@ class OpenAITextGenerator(TextGenerator):
         api_key: str = os.environ.get("OPENAI_API_KEY", None),
         provider: str = "openai",
         organization: str = None,
+        api_type: str = None,
+        api_base: str = None,
+        api_version: str = None,
     ):
         super().__init__(provider=provider)
+        api_key = api_key or os.environ.get("OPENAI_API_KEY", None)
+
         if api_key is None:
             raise ValueError(
                 "OpenAI API key is not set. Please set the OPENAI_API_KEY environment variable."
@@ -35,7 +40,13 @@ class OpenAITextGenerator(TextGenerator):
         openai.api_key = api_key
         if organization:
             openai.organization = organization
+        if api_type and api_type == "azure":
+            openai.api_base = api_base
+            openai.api_version = api_version
         self.api_key = api_key
+        self.api_type = api_type
+        self.api_base = api_base
+        self.api_version = api_version
 
     def generate(
             self, messages: Union[List[dict],
@@ -58,6 +69,9 @@ class OpenAITextGenerator(TextGenerator):
             "n": config.n,
             "messages": messages,
         }
+
+        if self.api_type and self.api_type == "azure":
+            oai_config["deployment_id"] = config.model
         self.model_name = model
         cache_key_params = (oai_config) | {"messages": messages}
         if use_cache:
