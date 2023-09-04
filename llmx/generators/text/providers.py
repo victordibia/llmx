@@ -1,4 +1,3 @@
-
 # This file contains the list of providers and models that are available supported by LLMX.
 
 providers = {
@@ -16,7 +15,7 @@ providers = {
             {"name": "gpt-3.5-turbo-16k", "max_tokens": 16384},
             {"name": "gpt-3.5-turbo-0613", "max_tokens": 4096},
             {"name": "gpt-3.5-turbo-16k-0613", "max_tokens": 16384},
-        ]
+        ],
     },
     "google": {
         "name": "Google",
@@ -24,7 +23,9 @@ providers = {
         "models": [
             {"name": "codechat-bison", "max_tokens": 1024},
             {"name": "chat-bison", "max_tokens": 1024},
-        ]
+            {"name": "codechat-bison-32k", "max_tokens": 32768},
+            {"name": "chat-bison-32k", "max_tokens": 32768},
+        ],
     },
     "cohere": {
         "name": "Cohere",
@@ -32,7 +33,7 @@ providers = {
         "models": [
             {"name": "command", "max_tokens": 4096},
             {"name": "command-nightly", "max_tokens": 4096},
-        ]
+        ],
     },
     "huggingface": {
         "name": "HuggingFace",
@@ -42,7 +43,7 @@ providers = {
             {"name": "TheBloke/Llama-2-13B-fp16", "max_tokens": 4096},
             {"name": "TheBloke/gpt4-x-vicuna-13B-HF", "max_tokens": 2040},
         ],
-    }
+    },
 }
 
 # providers["palm"] = providers["google"]
