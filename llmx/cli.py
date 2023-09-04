@@ -1,6 +1,5 @@
 import typer
 import os
-from typing_extensions import Annotated
 from .generators.text.providers import providers
 
 app = typer.Typer()
