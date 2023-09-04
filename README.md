@@ -15,7 +15,7 @@ There is nothing particularly special about this library, but some of the requir
 from llmx import  llm
 
 gen = llm(provider="openai") # openai is default
-gen = llm(provider="google") # or palm
+gen = llm(provider="palm") # or google
 gen = llm(provider="cohere") # or palm
 gen = llm(provider="hf", model="TheBloke/Llama-2-7b-chat-fp16", device_map="auto") # run huggingface model locally
 ```
