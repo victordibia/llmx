@@ -14,7 +14,7 @@ There is nothing particularly special about this library, but some of the requir
 ```python
 from llmx import  llm
 
-gen = llm(provider="openai") # openai is default
+gen = llm(provider="openai") # support azureopenai models too.
 gen = llm(provider="palm") # or google
 gen = llm(provider="cohere") # or palm
 gen = llm(provider="hf", model="TheBloke/Llama-2-7b-chat-fp16", device_map="auto") # run huggingface model locally
