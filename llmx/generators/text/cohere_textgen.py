@@ -35,16 +35,18 @@ class CohereTextGenerator(TextGenerator):
         return prompt
 
     def generate(
-            self, messages: Union[list[dict],
-                                  str],
-            config: TextGenerationConfig = TextGenerationConfig(),
-            **kwargs) -> TextGenerationResponse:
-
+        self,
+        messages: Union[list[dict], str],
+        config: TextGenerationConfig = TextGenerationConfig(),
+        **kwargs,
+    ) -> TextGenerationResponse:
         use_cache = config.use_cache
         messages = self.format_messages(messages)
         self.model_name = config.model
 
-        max_tokens = self.model_list[config.model] if config.model in self.model_list else 1024
+        max_tokens = (
+            self.model_list[config.model] if config.model in self.model_list else 1024
+        )
 
         cohere_config = {
             "model": config.model or "command",
@@ -81,10 +83,13 @@ class CohereTextGenerator(TextGenerator):
             text=response_text,
             logprobs=[],  # You may need to extract log probabilities from the response if needed
             config=cohere_config,
-            usage={},  # You may need to extract usage metrics from the response if needed
+            usage={},
+            response=co_response,
         )
 
-        cache_request(cache=self.cache, params=cache_key_params, values=asdict(response))
+        cache_request(
+            cache=self.cache, params=cache_key_params, values=asdict(response)
+        )
         return response
 
     def count_tokens(self, text) -> int:
