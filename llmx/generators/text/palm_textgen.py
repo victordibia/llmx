@@ -112,6 +112,7 @@ class PalmTextGenerator(TextGenerator):
                     response_text, model=self.model_name
                 )
             },
+            response=palm_response,
         )
 
         cache_request(

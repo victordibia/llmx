@@ -4,10 +4,14 @@ llmx/generators/cache
 llmx.egg-info
 notebooks/test.ipynb
 notebooks/data
+notebooks/.env
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
 *$py.class
+
+.DS_Store
+n
 
 # C extensions
 *.so

@@ -17,6 +17,10 @@ class Message:
     def to_dict(self):
         return self._fields_dict
 
+    def __iter__(self):
+        for key, value in self._fields_dict.items():
+            yield key, value
+
 
 @dataclass
 class TextGenerationConfig:
@@ -38,6 +42,10 @@ class TextGenerationConfig:
     def __getitem__(self, key: Union[str, int]) -> Any:
         return self._fields_dict.get(key)
 
+    def __iter__(self):
+        for key, value in self._fields_dict.items():
+            yield key, value
+
 
 @dataclass
 class TextGenerationResponse:
@@ -45,11 +53,22 @@ class TextGenerationResponse:
 
     text: List[Message]
     config: Any
-    logprobs: Optional[Any] = None
-    usage: Optional[Any] = None
+    logprobs: Optional[Any] = None  # logprobs if available
+    usage: Optional[Any] = None  # usage statistics from the provider
+    response: Optional[Any] = None  # full response from the provider
 
     def __post_init__(self):
         self._fields_dict = asdict(self)
 
     def __getitem__(self, key: Union[str, int]) -> Any:
         return self._fields_dict.get(key)
+
+    def __iter__(self):
+        for key, value in self._fields_dict.items():
+            yield key, value
+
+    def to_dict(self):
+        return self._fields_dict
+
+    def __json__(self):
+        return self._fields_dict
