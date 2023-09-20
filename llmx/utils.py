@@ -99,19 +99,23 @@ def gcp_request(
     body: dict = None,
     headers: dict = None,
     credentials: google.auth.credentials.Credentials = None,
+    request_timeout: int = 60,
     **kwargs,
 ):
-    if credentials is None:
-        credentials = get_gcp_credentials()
-    auth_req = google.auth.transport.requests.Request()
-    if credentials.expired:
-        credentials.refresh(auth_req)
+
     headers = headers or {}
-    headers["Authorization"] = f"Bearer {credentials.token}"
+
+    if "key" not in url:
+        if credentials is None:
+            credentials = get_gcp_credentials()
+        auth_req = google.auth.transport.requests.Request()
+        if credentials.expired:
+            credentials.refresh(auth_req)
+        headers["Authorization"] = f"Bearer {credentials.token}"
     headers["Content-Type"] = "application/json"
 
     response = requests.request(
-        method=method, url=url, json=body, headers=headers, **kwargs
+        method=method, url=url, json=body, headers=headers, timeout=request_timeout, **kwargs
     )
 
     if response.status_code not in range(200, 300):
