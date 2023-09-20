@@ -89,7 +89,7 @@ class DialogueTemplate:
 
 
 class HFTextGenerator(TextGenerator):
-    def __init__(self, provider: str = "huggingface", device_map="auto", **kwargs):
+    def __init__(self, provider: str = "huggingface", device_map=None, **kwargs):
 
         super().__init__(provider=provider)
 
@@ -97,11 +97,15 @@ class HFTextGenerator(TextGenerator):
 
         self.model_name = kwargs.get("model", "TheBloke/gpt4-x-vicuna-13B-HF")
         self.load_in_8bit = kwargs.get("load_in_8bit", False)
+        self.trust_remote_code = kwargs.get("trust_remote_code", False)
         self.device = kwargs.get("device", self.get_default_device())
-        self.tokenizer = AutoTokenizer.from_pretrained(self.model_name)
+
+        # load tokenizer and model
+        self.tokenizer = AutoTokenizer.from_pretrained(
+            self.model_name, trust_remote_code=self.trust_remote_code)
         self.model = AutoModelForCausalLM.from_pretrained(
-            self.model_name, device_map=device_map, load_in_8bit=self.load_in_8bit
-        )
+            self.model_name, device_map=device_map, load_in_8bit=self.load_in_8bit,
+            trust_remote_code=self.trust_remote_code)
         if not device_map:
             self.model.to(self.device)
         self.model.config.pad_token_id = self.tokenizer.pad_token_id

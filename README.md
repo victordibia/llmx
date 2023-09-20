@@ -76,6 +76,9 @@ Set your api keys first for each service.
 export OPENAI_API_KEY=<your key>
 export COHERE_API_KEY=<your key>
 
+# for PALM via MakerSuite
+export PALM_API_KEY=<your key>
+
 # for PaLM (Vertex AI), setup a gcp project, and get a service account key file
 export PALM_SERVICE_ACCOUNT_KEY_FILE= <path to your service account key file>
 export PALM_PROJECT_ID=<your gcp project id>
@@ -104,7 +107,7 @@ See the [tutorial](/notebooks/tutorial.ipynb) for more examples.
 
 - Supported models
   - [x] OpenAI
-  - [x] PaLM
+  - [x] PaLM (MakerSuite, Vertex AI)
   - [x] Cohere
   - [x] HuggingFace (local)
 
