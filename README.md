@@ -85,6 +85,8 @@ export PALM_PROJECT_ID=<your gcp project id>
 export PALM_PROJECT_LOCATION=<your project location>
 ```
 
+You can also set the default provider via a config file. Use the yaml format in this [sample `config.default.yml` file](configs/config.default.yml) and set the `LLMX_CONFIG_PATH` to the path of the config file.
+
 ```python
 from llmx import llm
 from llmx.datamodel import TextGenerationConfig
