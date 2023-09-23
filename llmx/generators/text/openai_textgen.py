@@ -29,6 +29,7 @@ class OpenAITextGenerator(TextGenerator):
         api_type: str = None,
         api_base: str = None,
         api_version: str = None,
+        model: str = None,
     ):
         super().__init__(provider=provider)
         api_key = api_key or os.environ.get("OPENAI_API_KEY", None)
@@ -47,6 +48,8 @@ class OpenAITextGenerator(TextGenerator):
         if api_type:
             openai.api_type = api_type
 
+        self.model_name = model or "gpt-3.5-turbo"
+
         # print content of class fields
         # print(vars(openai))
 
@@ -57,7 +60,7 @@ class OpenAITextGenerator(TextGenerator):
         **kwargs,
     ) -> TextGenerationResponse:
         use_cache = config.use_cache
-        model = config.model or "gpt-3.5-turbo-0301"
+        model = config.model or self.model_name
         prompt_tokens = num_tokens_from_messages(messages)
         max_tokens = max(context_lengths.get(model, 4096) - prompt_tokens - 10, 200)
 

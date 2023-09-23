@@ -1,10 +1,26 @@
+from ...utils import load_config
 from .openai_textgen import OpenAITextGenerator
 from .palm_textgen import PalmTextGenerator
 from .cohere_textgen import CohereTextGenerator
+import logging
+
+logger = logging.getLogger(__name__)
 
 
-def llm(provider: str = "openai", **kwargs):
-    if provider.lower() == "openai" or provider.lower() == "default":
+def llm(provider: str = None, **kwargs):
+
+    # load config
+    if provider is None:
+        # attempt to load config from environment variable LLMX_CONFIG_PATH
+        config = load_config()
+        if config:
+            provider = config["model"]["provider"]
+            kwargs = config["model"]["parameters"]
+    if provider is None:
+        logger.info("No provider specified. Defaulting to 'openai'.")
+        provider = "openai"
+    if provider.lower() == "openai" or provider.lower() == "default" or provider.lower(
+    ) == "azureopenai" or provider.lower() == "azureoai":
         return OpenAITextGenerator(**kwargs)
     elif provider.lower() == "palm" or provider.lower() == "google":
         return PalmTextGenerator(provider=provider, **kwargs)
@@ -13,11 +29,6 @@ def llm(provider: str = "openai", **kwargs):
     elif provider.lower() == "hf" or provider.lower() == "huggingface":
         try:
             import transformers
-            from transformers import (
-                AutoTokenizer,
-                AutoModelForCausalLM,
-                GenerationConfig,
-            )
         except ImportError:
             raise ImportError(
                 "Please install the `transformers` package to use the HFTextGenerator class. pip install llmx[transformers]"

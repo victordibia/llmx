@@ -95,7 +95,7 @@ class HFTextGenerator(TextGenerator):
 
         self.dialogue_type = kwargs.get("dialogue_type", "alpaca")
 
-        self.model_name = kwargs.get("model", "TheBloke/gpt4-x-vicuna-13B-HF")
+        self.model_name = kwargs.get("model", "uukuguy/speechless-llama2-hermes-orca-platypus-13b")
         self.load_in_8bit = kwargs.get("load_in_8bit", False)
         self.trust_remote_code = kwargs.get("trust_remote_code", False)
         self.device = kwargs.get("device", self.get_default_device())

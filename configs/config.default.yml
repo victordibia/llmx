@@ -1,0 +1,18 @@
+# Sets the the default model to use for llm() when no provider parameter is set.
+
+model:
+  provider: azureopenai
+  parameters:
+    api_key: <your-api-key>
+    api_type: azure
+    api_base: <your-api-base>
+    api_version: <your-api-version>
+    organization: <your-organization> # or null
+    model: <your-model>
+# example with huggingface model
+# model:
+#     provider: huggingface
+#     parameters:
+#         model: uukuguy/speechless-llama2-hermes-orca-platypus-13b
+#         device_map: auto
+#         trust_remote_code: true

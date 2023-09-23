@@ -14,6 +14,7 @@ class CohereTextGenerator(TextGenerator):
         self,
         api_key: str = None,
         provider: str = "cohere",
+        model: str = None,
     ):
         super().__init__(provider=provider)
         api_key = api_key or os.environ.get("COHERE_API_KEY", None)
@@ -23,6 +24,7 @@ class CohereTextGenerator(TextGenerator):
             )
         self.client = cohere.Client(api_key)
         self.model_list = providers[provider]["models"]
+        self.model_name = model or "command"
 
     def format_messages(self, messages):
         prompt = ""
@@ -42,14 +44,14 @@ class CohereTextGenerator(TextGenerator):
     ) -> TextGenerationResponse:
         use_cache = config.use_cache
         messages = self.format_messages(messages)
-        self.model_name = config.model
+        self.model_name = config.model or self.model_name
 
         max_tokens = (
             self.model_list[config.model] if config.model in self.model_list else 1024
         )
 
         cohere_config = {
-            "model": config.model or "command",
+            "model": self.model_name,
             "prompt": messages,
             "max_tokens": config.max_tokens or max_tokens,
             "temperature": config.temperature,
