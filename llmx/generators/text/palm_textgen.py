@@ -23,6 +23,7 @@ class PalmTextGenerator(TextGenerator):
         project_id: str = os.environ.get("PALM_PROJECT_ID", None),
         project_location=os.environ.get("PALM_PROJECT_LOCATION", "us-central1"),
         provider: str = "palm",
+        model: str = None,
     ):
         super().__init__(provider=provider)
 
@@ -42,6 +43,7 @@ class PalmTextGenerator(TextGenerator):
             self.credentials = get_gcp_credentials(palm_key_file) if palm_key_file else None
 
         self.model_list = providers[provider]["models"] if provider in providers else {}
+        self.model_name = model or "chat-bison"
 
     def format_messages(self, messages):
         palm_messages = []
@@ -78,7 +80,7 @@ class PalmTextGenerator(TextGenerator):
         **kwargs,
     ) -> TextGenerationResponse:
         use_cache = config.use_cache
-        model = config.model or "chat-bison"
+        model = config.model or self.model_name
 
         system_messages, messages = self.format_messages(messages)
         self.model_name = model

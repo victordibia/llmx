@@ -25,7 +25,8 @@ dependencies = [
     "diskcache",
     "cohere", 
     "google.auth",
-    "typer"
+    "typer",
+    "pyyaml",
 ]
 optional-dependencies = {web = ["fastapi", "uvicorn"], transformers = ["transformers[torch]>=4.26"]}
 
