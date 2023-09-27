@@ -1,18 +1,18 @@
 from dataclasses import asdict
 import os
 import logging
-from typing import Union
+from typing import Dict, Union
 from .base_textgen import TextGenerator
 from ...datamodel import TextGenerationConfig, TextGenerationResponse, Message
 from ...utils import (
     cache_request,
     gcp_request,
+    get_models_maxtoken_dict,
     num_tokens_from_messages,
     get_gcp_credentials,
 )
-from ..text.providers import providers
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("llmx")
 
 
 class PalmTextGenerator(TextGenerator):
@@ -24,6 +24,7 @@ class PalmTextGenerator(TextGenerator):
         project_location=os.environ.get("PALM_PROJECT_LOCATION", "us-central1"),
         provider: str = "palm",
         model: str = None,
+        models: Dict = None,
     ):
         super().__init__(provider=provider)
 
@@ -42,7 +43,7 @@ class PalmTextGenerator(TextGenerator):
             self.api_key = None
             self.credentials = get_gcp_credentials(palm_key_file) if palm_key_file else None
 
-        self.model_list = providers[provider]["models"] if provider in providers else {}
+        self.model_max_token_dict = get_models_maxtoken_dict(models)
         self.model_name = model or "chat-bison"
 
     def format_messages(self, messages):
@@ -85,7 +86,7 @@ class PalmTextGenerator(TextGenerator):
         system_messages, messages = self.format_messages(messages)
         self.model_name = model
 
-        max_tokens = self.model_list[config.model] if model in self.model_list else 1024
+        max_tokens = self.model_max_token_dict[config.model] if model in self.model_max_token_dict else 1024
         palm_config = {
             "temperature": config.temperature,
             "maxOutputTokens": config.max_tokens or max_tokens,

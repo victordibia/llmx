@@ -1,5 +1,4 @@
 from dataclasses import asdict
-import sys
 import logging
 import json
 from typing import Any, Union, Dict
@@ -14,7 +13,7 @@ from google.oauth2 import service_account
 import requests
 import yaml
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("llmx")
 
 
 def num_tokens_from_messages(messages, model="gpt-3.5-turbo-0301"):
@@ -131,15 +130,22 @@ def gcp_request(
     return response.json()
 
 
-def load_config(config_path: str = "LLMX_CONFIG_PATH"):
+def load_config():
     try:
-        config_path = os.environ.get(config_path, None)
+        config_path = os.environ.get("LLMX_CONFIG_PATH", None)
+        if config_path is None or os.path.exists(config_path) is False:
+            config_path = os.path.join(
+                os.path.dirname(__file__),
+                "configs/config.default.yml")
+            logger.info(
+                "Info: LLMX_CONFIG_PATH environment variable is not set to a valid config file. Using default config file at '%s'.",
+                config_path)
         if config_path is not None:
             try:
                 with open(config_path, "r", encoding="utf-8") as f:
                     config = yaml.safe_load(f)
                     logger.info(
-                        f"Loaded config {config['model']['provider']} from '%s'.",
+                        "Loaded config from '%s'.",
                         config_path)
                     return config
             except FileNotFoundError as file_not_found:
@@ -162,3 +168,12 @@ def load_config(config_path: str = "LLMX_CONFIG_PATH"):
         logger.info("Error: An unexpected error occurred: %s", str(error))
 
     return None
+
+
+def get_models_maxtoken_dict(models_list):
+    models_dict = {}
+    for model in models_list:
+        if "model" in model and "parameters" in model["model"]:
+            details = model["model"]["parameters"]
+            models_dict[details["model"]] = model["max_tokens"]
+    return models_dict

@@ -1,5 +1,4 @@
 import typer
-import os
 from .generators.text.providers import providers
 
 app = typer.Typer()
