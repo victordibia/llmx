@@ -86,7 +86,7 @@ class PalmTextGenerator(TextGenerator):
         system_messages, messages = self.format_messages(messages)
         self.model_name = model
 
-        max_tokens = self.model_max_token_dict[config.model] if model in self.model_max_token_dict else 1024
+        max_tokens = self.model_max_token_dict[model] if model in self.model_max_token_dict else 1024
         palm_config = {
             "temperature": config.temperature,
             "maxOutputTokens": config.max_tokens or max_tokens,

@@ -48,7 +48,7 @@ class CohereTextGenerator(TextGenerator):
         self.model_name = config.model or self.model_name
 
         max_tokens = (
-            self.model_max_token_dict[config.model]
+            self.model_max_token_dict[self.model_name]
             if config.model in self.model_max_token_dict else 1024)
 
         cohere_config = {
