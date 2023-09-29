@@ -43,14 +43,17 @@ def llm(provider: str = None, **kwargs):
     # set the list of available models based on the config file
     models = config["providers"][provider]["models"] if "providers" in config and provider in config["providers"] else {}
 
+    kwargs["provider"] = kwargs["provider"] if "provider" in kwargs else provider
+    kwargs["models"] = kwargs["models"] if "models" in kwargs else models
+
     # print(kwargs)
 
     if provider.lower() == "openai":
-        return OpenAITextGenerator(models=models, **kwargs)
+        return OpenAITextGenerator(**kwargs)
     elif provider.lower() == "palm":
-        return PalmTextGenerator(provider=provider, models=models, **kwargs)
+        return PalmTextGenerator(**kwargs)
     elif provider.lower() == "cohere":
-        return CohereTextGenerator(provider=provider, models=models, **kwargs)
+        return CohereTextGenerator(**kwargs)
     elif provider.lower() == "hf":
         try:
             import transformers
