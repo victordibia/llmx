@@ -28,6 +28,12 @@ providers:
           provider: openai
           parameters:
             model: gpt-3.5-turbo
+      - name: gpt-3.5-turbo-0301
+        max_tokens: 4096
+        model:
+          provider: openai
+          parameters:
+            model: gpt-3.5-turbo-0301
       - name: gpt-3.5-turbo-16k
         max_tokens: 16384
         model:
@@ -64,6 +70,13 @@ providers:
           provider: palm
           parameters:
             model: chat-bison-001
+            api_key: <your-makersuite-api-key>
+      - name: codechat-bison-makersuite
+        max_tokens: 1024
+        model:
+          provider: palm
+          parameters:
+            model: codechat-bison-001
             api_key: <your-makersuite-api-key>
       - name: codechat-bison-32k
         max_tokens: 32768
