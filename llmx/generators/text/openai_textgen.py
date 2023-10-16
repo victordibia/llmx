@@ -1,23 +1,10 @@
-from typing import Union, List
+from typing import Union, List, Dict
 from .base_textgen import TextGenerator
 from ...datamodel import Message, TextGenerationConfig, TextGenerationResponse
-from ...utils import cache_request, num_tokens_from_messages
+from ...utils import cache_request, get_models_maxtoken_dict, num_tokens_from_messages
 import os
 import openai
 from dataclasses import asdict
-
-context_lengths = {
-    "gpt-4": 8192,
-    "gpt-4-0314": 8192,
-    "gpt-4-0613": 8192,
-    "gpt-4-32k": 32768,
-    "gpt-4-32k-0613": 32768,
-    "gpt-3.5-turbo": 4096,
-    "gpt-3.5-turbo-0301": 4096,
-    "gpt-3.5-turbo-16k": 16384,
-    "gpt-3.5-turbo-0613": 4096,
-    "gpt-3.5-turbo-16k-0613": 16384,
-}
 
 
 class OpenAITextGenerator(TextGenerator):
@@ -30,6 +17,7 @@ class OpenAITextGenerator(TextGenerator):
         api_base: str = None,
         api_version: str = None,
         model: str = None,
+        models: Dict = None,
     ):
         super().__init__(provider=provider)
         api_key = api_key or os.environ.get("OPENAI_API_KEY", None)
@@ -50,8 +38,8 @@ class OpenAITextGenerator(TextGenerator):
 
         self.model_name = model or "gpt-3.5-turbo"
 
-        # print content of class fields
-        # print(vars(openai))
+        self.model_max_token_dict = get_models_maxtoken_dict(models)
+        # print("context lengths", self.model_max_token_dict)
 
     def generate(
         self,
@@ -62,7 +50,7 @@ class OpenAITextGenerator(TextGenerator):
         use_cache = config.use_cache
         model = config.model or self.model_name
         prompt_tokens = num_tokens_from_messages(messages)
-        max_tokens = max(context_lengths.get(model, 4096) - prompt_tokens - 10, 200)
+        max_tokens = max(self.model_max_token_dict.get(model, 4096) - prompt_tokens - 10, 200)
 
         oai_config = {
             "model": model,

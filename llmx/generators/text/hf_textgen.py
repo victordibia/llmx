@@ -1,4 +1,4 @@
-from typing import Union
+from typing import Dict, Union
 from dataclasses import asdict, dataclass
 from transformers import (AutoTokenizer, AutoModelForCausalLM, GenerationConfig)
 import torch
@@ -6,7 +6,7 @@ import torch
 
 from .base_textgen import TextGenerator
 from ...datamodel import TextGenerationConfig, TextGenerationResponse
-from ...utils import cache_request
+from ...utils import cache_request, get_models_maxtoken_dict
 
 
 @dataclass
@@ -89,7 +89,10 @@ class DialogueTemplate:
 
 
 class HFTextGenerator(TextGenerator):
-    def __init__(self, provider: str = "huggingface", device_map=None, **kwargs):
+    def __init__(self,
+                 provider: str = "huggingface",
+                 models: Dict = None,
+                 device_map=None, **kwargs):
 
         super().__init__(provider=provider)
 
@@ -111,9 +114,11 @@ class HFTextGenerator(TextGenerator):
         self.model.config.pad_token_id = self.tokenizer.pad_token_id
 
         self.max_length = kwargs.get("max_length", 1024)
+
+        self.model_max_token_dict = get_models_maxtoken_dict(models)
         self.max_context_tokens = kwargs.get(
             "max_context_tokens", self.model.config.max_position_embeddings
-        )
+        ) or self.model_max_token_dict[self.model_name]
 
         if self.dialogue_type == "alpaca":
             self.dialogue_template = DialogueTemplate(

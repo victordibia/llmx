@@ -1,0 +1,133 @@
+# Sets the the default model to use for llm() when no provider parameter is set.
+model:
+  provider: openai
+  parameters:
+    api_key: null
+
+# list of supported providers.
+providers:
+  openai:
+    name: OpenAI
+    description: OpenAI's and AzureOpenAI GPT-3 and GPT-4 models.
+    models:
+      - name: gpt-4 # general model name, can be anything
+        max_tokens: 8192 # max supported tokens
+        model:
+          provider: openai
+          parameters:
+            model: gpt-4 # model actual name, required
+      - name: gpt-4-32k
+        max_tokens: 32768
+        model:
+          provider: openai
+          parameters:
+            model: gpt-4-32k
+      - name: gpt-3.5-turbo
+        max_tokens: 4096
+        model:
+          provider: openai
+          parameters:
+            model: gpt-3.5-turbo
+      - name: gpt-3.5-turbo-0301
+        max_tokens: 4096
+        model:
+          provider: openai
+          parameters:
+            model: gpt-3.5-turbo-0301
+      - name: gpt-3.5-turbo-16k
+        max_tokens: 16384
+        model:
+          provider: openai
+          parameters:
+            model: gpt-3.5-turbo-16k
+      - name: gpt-3.5-turbo-azure
+        max_tokens: 4096
+        model:
+          provider: azureopenai
+          parameters:
+            api_key: <your-api-key>
+            api_type: azure
+            api_base: <your-api-base>
+            api_version: <your-api-version>
+            organization: <your-organization> # or null
+            model: gpt-3.5-turbo-0316
+  palm:
+    name: Google
+    description: Google's LLM models.
+    models:
+      - name: chat-bison-vertexai
+        max_tokens: 1024
+        model:
+          provider: palm
+          parameters:
+            model: codechat-bison@001
+            project_id: <your-project-id>
+            project_location: <your-project-location>
+            palm_key_file: <path-to-your-palm-key-file>
+      - name: chat-bison-makersuite
+        max_tokens: 1024
+        model:
+          provider: palm
+          parameters:
+            model: chat-bison-001
+            api_key: <your-makersuite-api-key>
+      - name: codechat-bison-makersuite
+        max_tokens: 1024
+        model:
+          provider: palm
+          parameters:
+            model: codechat-bison-001
+            api_key: <your-makersuite-api-key>
+      - name: codechat-bison-32k
+        max_tokens: 32768
+        model:
+          provider: palm
+          parameters:
+            model: codechat-bison-32k
+            project_id: <your-project-id>
+            project_location: <your-project-location>
+            palm_key_file: <path-to-your-palm-key-file>
+      - name: chat-bison-32k
+        max_tokens: 32768
+        model:
+          provider: palm
+          parameters:
+            model: codechat-bison-32k
+            project_id: <your-project-id>
+            project_location: <your-project-location>
+            palm_key_file: <path-to-your-palm-key-file>
+  cohere:
+    name: Cohere
+    description: Cohere's LLM models.
+    models:
+      - name: command
+        max_tokens: 4096
+        model:
+          provider: cohere
+          parameters:
+            model: command
+      - name: command-nightly
+        max_tokens: 4096
+        model:
+          provider: cohere
+          parameters:
+            model: command-nightly
+  huggingface:
+    name: HuggingFace
+    description: HuggingFace's LLM models.
+    models:
+      - name: TheBloke/Llama-2-7b-chat-fp16
+        max_tokens: 4096
+        model:
+          provider: huggingface
+          parameters:
+            model: TheBloke/Llama-2-7b-chat-fp16
+            device_map: auto
+      - name: hermes-orca-platypus-13b
+        max_tokens: 4096
+        model:
+          provider: huggingface
+          parameters:
+            model: uukuguy/speechless-llama2-hermes-orca-platypus-13b
+            device_map: auto
+            trust_remote_code: true
