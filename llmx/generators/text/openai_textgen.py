@@ -64,7 +64,7 @@ class OpenAITextGenerator(TextGenerator):
         }
 
         if openai.api_type and openai.api_type == "azure":
-            oai_config["engine"] = config.model
+            oai_config["engine"] = model
 
         self.model_name = model
         cache_key_params = (oai_config) | {"messages": messages}
