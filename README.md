@@ -105,6 +105,23 @@ print(openai_response.text[0].content)
 
 See the [tutorial](/notebooks/tutorial.ipynb) for more examples.
 
+## A Note on Using Local HuggingFace Models
+
+While llmx can use the huggingface transformers library to run inference with local models, you might get more mileage from using a well-optimized server endpoint like [vllm](https://vllm.readthedocs.io/en/latest/getting_started/quickstart.html#openai-compatible-server), or FastChat. The general idea is that these tools let you provide an openai-compatible endpoint but also implement optimizations such as dynamic batching, quantization etc to improve throughput. The general steps are:
+
+- install vllm, setup endpoint e.g., on port `8000`
+- use openai as your provider to access that endpoint.
+
+```python
+from llmx import  llm
+hfgen_gen = llm(
+    provider="openai",
+    api_base="http://localhost:8000",
+    api_key="EMPTY,
+)
+...
+```
+
 ## Current Work
 
 - Supported models
