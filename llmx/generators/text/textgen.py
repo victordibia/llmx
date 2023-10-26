@@ -72,7 +72,7 @@ def llm(provider: str = None, **kwargs):
 
         from .hf_textgen import HFTextGenerator
 
-        return HFTextGenerator(provider=provider, models=models, **kwargs)
+        return HFTextGenerator(**kwargs)
 
     else:
         raise ValueError(
