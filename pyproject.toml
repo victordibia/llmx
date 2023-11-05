@@ -27,6 +27,7 @@ dependencies = [
     "google.auth",
     "typer",
     "pyyaml",
+    "scikit-learn"
 ]
 optional-dependencies = {web = ["fastapi", "uvicorn"], transformers = ["transformers[torch]>=4.26"]}
 
