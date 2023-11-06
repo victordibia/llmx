@@ -1,2 +1,1 @@
-VERSION = "0.0.11a"
-APP_NAME = "llmx"
+VERSION = "0.0.17a"

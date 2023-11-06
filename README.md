@@ -2,7 +2,7 @@
 
 [![PyPI version](https://badge.fury.io/py/llmx.svg)](https://badge.fury.io/py/llmx)
 
-A simple python package that provides a unified interface to several LLM providers of chat fine-tuned models [OpenAI (default), PaLM, Cohere and local HuggingFace Models].
+A simple python package that provides a unified interface to several LLM providers of chat fine-tuned models [OpenAI, AzureOpenAI, PaLM, Cohere and local HuggingFace Models].
 
 > **Note**
 > llmx wraps multiple api providers and its interface _may_ change as the providers as well as the general field of LLMs evolve.
@@ -17,7 +17,7 @@ from llmx import  llm
 gen = llm(provider="openai") # support azureopenai models too.
 gen = llm(provider="palm") # or google
 gen = llm(provider="cohere") # or palm
-gen = llm(provider="hf", model="TheBloke/Llama-2-7b-chat-fp16", device_map="auto") # run huggingface model locally
+gen = llm(provider="hf", model="uukuguy/speechless-llama2-hermes-orca-platypus-13b", device_map="auto") # run huggingface model locally
 ```
 
 - **Unified Messaging Interface**. Standardizes on the OpenAI ChatML message format and is designed for _chat finetuned_ models. For example, the standard prompt sent a model is formatted as an array of objects, where each object has a role (`system`, `user`, or `assistant`) and content (see below). A single request is list of only one message (e.g., write code to plot a cosine wave signal). A conversation is a list of messages e.g. write code for x, update the axis to y, etc. Same format for all models.
@@ -76,11 +76,16 @@ Set your api keys first for each service.
 export OPENAI_API_KEY=<your key>
 export COHERE_API_KEY=<your key>
 
+# for PALM via MakerSuite
+export PALM_API_KEY=<your key>
+
 # for PaLM (Vertex AI), setup a gcp project, and get a service account key file
 export PALM_SERVICE_ACCOUNT_KEY_FILE= <path to your service account key file>
 export PALM_PROJECT_ID=<your gcp project id>
 export PALM_PROJECT_LOCATION=<your project location>
 ```
+
+You can also set the default provider and list of supported providers via a config file. Use the yaml format in this [sample `config.default.yml` file](llmx/configs/config.default.yml) and set the `LLMX_CONFIG_PATH` to the path of the config file.
 
 ```python
 from llmx import llm
@@ -100,18 +105,35 @@ print(openai_response.text[0].content)
 
 See the [tutorial](/notebooks/tutorial.ipynb) for more examples.
 
+## A Note on Using Local HuggingFace Models
+
+While llmx can use the huggingface transformers library to run inference with local models, you might get more mileage from using a well-optimized server endpoint like [vllm](https://vllm.readthedocs.io/en/latest/getting_started/quickstart.html#openai-compatible-server), or FastChat. The general idea is that these tools let you provide an openai-compatible endpoint but also implement optimizations such as dynamic batching, quantization etc to improve throughput. The general steps are:
+
+- install vllm, setup endpoint e.g., on port `8000`
+- use openai as your provider to access that endpoint.
+
+```python
+from llmx import  llm
+hfgen_gen = llm(
+    provider="openai",
+    api_base="http://localhost:8000",
+    api_key="EMPTY,
+)
+...
+```
+
 ## Current Work
 
 - Supported models
   - [x] OpenAI
-  - [x] PaLM
+  - [x] PaLM ([MakerSuite](https://developers.generativeai.google/api/rest/generativelanguage), [Vertex AI](https://cloud.google.com/vertex-ai/docs/generative-ai/learn/models))
   - [x] Cohere
   - [x] HuggingFace (local)
 
 ## Caveats
 
 - **Prompting**. llmx makes some assumptions around how prompts are constructed e.g., how the chat message interface is assembled into a prompt for each model type. If your application or use case requires more control over the prompt, you may want to use a different library (ideally query the LLM models directly).
-- **Inference Optimization**. This library is not really designed for speed, but more for rapid experimentation using multiple models. If you are looking for a library that is optimized for inference (tensor parrelization, distributed inference etc), I'd recommend looking at [vllm](https://github.com/vllm-project/vllm) or [tgi](https://github.com/huggingface/text-generation-inference)
+- **Inference Optimization**. For hosted models (GPT-4, PalM, Cohere) etc, this library provides an excellent unified interface as the hosted api already takes care of inference optimizations. However, if you are looking for a library that is optimized for inference with **_local models_(e.g., huggingface)** (tensor parrelization, distributed inference etc), I'd recommend looking at [vllm](https://github.com/vllm-project/vllm) or [tgi](https://github.com/huggingface/text-generation-inference).
 
 ## Citation
 

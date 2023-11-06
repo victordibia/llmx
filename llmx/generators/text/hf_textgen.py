@@ -1,4 +1,4 @@
-from typing import Union
+from typing import Dict, Union
 from dataclasses import asdict, dataclass
 from transformers import (AutoTokenizer, AutoModelForCausalLM, GenerationConfig)
 import torch
@@ -6,7 +6,7 @@ import torch
 
 from .base_textgen import TextGenerator
 from ...datamodel import TextGenerationConfig, TextGenerationResponse
-from ...utils import cache_request
+from ...utils import cache_request, get_models_maxtoken_dict
 
 
 @dataclass
@@ -89,27 +89,36 @@ class DialogueTemplate:
 
 
 class HFTextGenerator(TextGenerator):
-    def __init__(self, provider: str = "huggingface", device_map="auto", **kwargs):
+    def __init__(self,
+                 provider: str = "huggingface",
+                 models: Dict = None,
+                 device_map=None, **kwargs):
 
         super().__init__(provider=provider)
 
         self.dialogue_type = kwargs.get("dialogue_type", "alpaca")
 
-        self.model_name = kwargs.get("model", "TheBloke/gpt4-x-vicuna-13B-HF")
+        self.model_name = kwargs.get("model", "uukuguy/speechless-llama2-hermes-orca-platypus-13b")
         self.load_in_8bit = kwargs.get("load_in_8bit", False)
+        self.trust_remote_code = kwargs.get("trust_remote_code", False)
         self.device = kwargs.get("device", self.get_default_device())
-        self.tokenizer = AutoTokenizer.from_pretrained(self.model_name)
+
+        # load tokenizer and model
+        self.tokenizer = AutoTokenizer.from_pretrained(
+            self.model_name, trust_remote_code=self.trust_remote_code)
         self.model = AutoModelForCausalLM.from_pretrained(
-            self.model_name, device_map=device_map, load_in_8bit=self.load_in_8bit
-        )
+            self.model_name, device_map=device_map, load_in_8bit=self.load_in_8bit,
+            trust_remote_code=self.trust_remote_code)
         if not device_map:
             self.model.to(self.device)
         self.model.config.pad_token_id = self.tokenizer.pad_token_id
 
         self.max_length = kwargs.get("max_length", 1024)
+
+        self.model_max_token_dict = get_models_maxtoken_dict(models)
         self.max_context_tokens = kwargs.get(
             "max_context_tokens", self.model.config.max_position_embeddings
-        )
+        ) or self.model_max_token_dict[self.model_name]
 
         if self.dialogue_type == "alpaca":
             self.dialogue_template = DialogueTemplate(

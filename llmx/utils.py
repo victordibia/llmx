@@ -1,5 +1,4 @@
 from dataclasses import asdict
-import sys
 import logging
 import json
 from typing import Any, Union, Dict
@@ -12,8 +11,9 @@ import google.auth
 import google.auth.transport.requests
 from google.oauth2 import service_account
 import requests
+import yaml
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("llmx")
 
 
 def num_tokens_from_messages(messages, model="gpt-3.5-turbo-0301"):
@@ -99,19 +99,23 @@ def gcp_request(
     body: dict = None,
     headers: dict = None,
     credentials: google.auth.credentials.Credentials = None,
+    request_timeout: int = 60,
     **kwargs,
 ):
-    if credentials is None:
-        credentials = get_gcp_credentials()
-    auth_req = google.auth.transport.requests.Request()
-    if credentials.expired:
-        credentials.refresh(auth_req)
+
     headers = headers or {}
-    headers["Authorization"] = f"Bearer {credentials.token}"
+
+    if "key" not in url:
+        if credentials is None:
+            credentials = get_gcp_credentials()
+        auth_req = google.auth.transport.requests.Request()
+        if credentials.expired:
+            credentials.refresh(auth_req)
+        headers["Authorization"] = f"Bearer {credentials.token}"
     headers["Content-Type"] = "application/json"
 
     response = requests.request(
-        method=method, url=url, json=body, headers=headers, **kwargs
+        method=method, url=url, json=body, headers=headers, timeout=request_timeout, **kwargs
     )
 
     if response.status_code not in range(200, 300):
@@ -124,3 +128,52 @@ def gcp_request(
         )
 
     return response.json()
+
+
+def load_config():
+    try:
+        config_path = os.environ.get("LLMX_CONFIG_PATH", None)
+        if config_path is None or os.path.exists(config_path) is False:
+            config_path = os.path.join(
+                os.path.dirname(__file__),
+                "configs/config.default.yml")
+            logger.info(
+                "Info: LLMX_CONFIG_PATH environment variable is not set to a valid config file. Using default config file at '%s'.",
+                config_path)
+        if config_path is not None:
+            try:
+                with open(config_path, "r", encoding="utf-8") as f:
+                    config = yaml.safe_load(f)
+                    logger.info(
+                        "Loaded config from '%s'.",
+                        config_path)
+                    return config
+            except FileNotFoundError as file_not_found:
+                logger.info(
+                    "Error: Config file not found at '%s'. Please check the LLMX_CONFIG_PATH environment variable. %s",
+                    config_path,
+                    str(file_not_found))
+            except IOError as io_error:
+                logger.info(
+                    "Error: Could not read the config file at '%s'. %s",
+                    config_path, str(io_error))
+            except yaml.YAMLError as yaml_error:
+                logger.info(
+                    "Error: Malformed YAML in config file at '%s'. %s",
+                    config_path, str(yaml_error))
+        else:
+            logger.info(
+                "Info:LLMX_CONFIG_PATH environment variable is not set. Please set it to the path of your config file to setup your default model.")
+    except Exception as error:
+        logger.info("Error: An unexpected error occurred: %s", str(error))
+
+    return None
+
+
+def get_models_maxtoken_dict(models_list):
+    models_dict = {}
+    for model in models_list:
+        if "model" in model and "parameters" in model["model"]:
+            details = model["model"]["parameters"]
+            models_dict[details["model"]] = model["max_tokens"]
+    return models_dict

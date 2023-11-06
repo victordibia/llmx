@@ -1,11 +1,11 @@
-from typing import Union
+from typing import Dict, Union
 import os
 import cohere
 from dataclasses import asdict
 
 from .base_textgen import TextGenerator
 from ...datamodel import TextGenerationConfig, TextGenerationResponse, Message
-from ...utils import cache_request, num_tokens_from_messages
+from ...utils import cache_request, get_models_maxtoken_dict, num_tokens_from_messages
 from ..text.providers import providers
 
 
@@ -14,6 +14,8 @@ class CohereTextGenerator(TextGenerator):
         self,
         api_key: str = None,
         provider: str = "cohere",
+        model: str = None,
+        models: Dict = None,
     ):
         super().__init__(provider=provider)
         api_key = api_key or os.environ.get("COHERE_API_KEY", None)
@@ -22,7 +24,8 @@ class CohereTextGenerator(TextGenerator):
                 "Cohere API key is not set. Please set the COHERE_API_KEY environment variable."
             )
         self.client = cohere.Client(api_key)
-        self.model_list = providers[provider]["models"]
+        self.model_max_token_dict = get_models_maxtoken_dict(models)
+        self.model_name = model or "command"
 
     def format_messages(self, messages):
         prompt = ""
@@ -42,14 +45,14 @@ class CohereTextGenerator(TextGenerator):
     ) -> TextGenerationResponse:
         use_cache = config.use_cache
         messages = self.format_messages(messages)
-        self.model_name = config.model
+        self.model_name = config.model or self.model_name
 
         max_tokens = (
-            self.model_list[config.model] if config.model in self.model_list else 1024
-        )
+            self.model_max_token_dict[self.model_name]
+            if config.model in self.model_max_token_dict else 1024)
 
         cohere_config = {
-            "model": config.model or "command",
+            "model": self.model_name,
             "prompt": messages,
             "max_tokens": config.max_tokens or max_tokens,
             "temperature": config.temperature,

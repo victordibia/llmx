@@ -31,8 +31,8 @@ def test_openai():
 
 
 def test_google():
-    google_gen = llm(provider="google")
-    config.model = "chat-bison@001"
+    google_gen = llm(provider="palm", api_key=os.environ.get("PALM_API_KEY", None))
+    config.model = "chat-bison-001"
     google_response = google_gen.generate(messages, config=config)
     answer = google_response.text[0].content
     print(google_response.text[0].content)
