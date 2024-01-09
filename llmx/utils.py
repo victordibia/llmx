@@ -171,6 +171,9 @@ def load_config():
 
 
 def get_models_maxtoken_dict(models_list):
+    if not models_list:
+        return {}
+
     models_dict = {}
     for model in models_list:
         if "model" in model and "parameters" in model["model"]:
