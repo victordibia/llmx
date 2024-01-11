@@ -4,6 +4,7 @@ from ...datamodel import Message, TextGenerationConfig, TextGenerationResponse
 from ...utils import cache_request, get_models_maxtoken_dict, num_tokens_from_messages
 import os
 import openai
+from openai import OpenAI
 from dataclasses import asdict
 
 
@@ -14,7 +15,6 @@ class OpenAITextGenerator(TextGenerator):
         provider: str = "openai",
         organization: str = None,
         api_type: str = None,
-        api_base: str = None,
         api_version: str = None,
         model: str = None,
         models: Dict = None,
@@ -34,6 +34,8 @@ class OpenAITextGenerator(TextGenerator):
         if api_type:
             openai.api_type = api_type
 
+        self.client = OpenAI()
+
         self.model_name = model or "gpt-3.5-turbo"
 
         self.model_max_token_dict = get_models_maxtoken_dict(models)
@@ -48,7 +50,9 @@ class OpenAITextGenerator(TextGenerator):
         use_cache = config.use_cache
         model = config.model or self.model_name
         prompt_tokens = num_tokens_from_messages(messages)
-        max_tokens = max(self.model_max_token_dict.get(model, 4096) - prompt_tokens - 10, 200)
+        max_tokens = max(
+            self.model_max_token_dict.get(model, 4096) - prompt_tokens - 10, 200
+        )
 
         oai_config = {
             "model": model,
@@ -71,10 +75,10 @@ class OpenAITextGenerator(TextGenerator):
             if response:
                 return TextGenerationResponse(**response)
 
-        oai_response = openai.ChatCompletion.create(**oai_config)
+        oai_response = self.client.chat.completions.create(**oai_config)
 
         response = TextGenerationResponse(
-            text=[Message(**x.message) for x in oai_response.choices],
+            text=[Message(**x.message.model_dump()) for x in oai_response.choices],
             logprobs=[],
             config=oai_config,
             usage=dict(oai_response.usage),
