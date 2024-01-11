@@ -31,8 +31,6 @@ class OpenAITextGenerator(TextGenerator):
             openai.organization = organization
         if api_version:
             openai.api_version = api_version
-        if api_base:
-            openai.api_base = api_base
         if api_type:
             openai.api_type = api_type
 
