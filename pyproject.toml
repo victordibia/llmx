@@ -20,7 +20,7 @@ classifiers = [
 
 dependencies = [
     "pydantic",
-    "openai==0.28.1",  
+    "openai",
     "tiktoken",
     "diskcache",
     "cohere", 
