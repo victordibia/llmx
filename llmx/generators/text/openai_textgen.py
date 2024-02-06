@@ -4,7 +4,7 @@ from ...datamodel import Message, TextGenerationConfig, TextGenerationResponse
 from ...utils import cache_request, get_models_maxtoken_dict, num_tokens_from_messages
 import os
 import openai
-from openai import OpenAI
+from openai import AzureOpenAI, OpenAI
 from dataclasses import asdict
 
 
@@ -16,30 +16,39 @@ class OpenAITextGenerator(TextGenerator):
         organization: str = None,
         api_type: str = None,
         api_version: str = None,
+        base_url: str = None,
         model: str = None,
         models: Dict = None,
     ):
         super().__init__(provider=provider)
-        api_key = api_key or os.environ.get("OPENAI_API_KEY", None)
+        self.api_key = api_key or os.environ.get("OPENAI_API_KEY", None)
 
-        if api_key is None:
+        if self.api_key is None:
             raise ValueError(
                 "OpenAI API key is not set. Please set the OPENAI_API_KEY environment variable."
             )
-        openai.api_key = api_key
-        if organization:
-            openai.organization = organization
-        if api_version:
-            openai.api_version = api_version
-        if api_type:
-            openai.api_type = api_type
 
-        self.client = OpenAI()
+        self.client_args = {
+            "api_key": self.api_key,
+            "organization": organization,
+            "api_version": api_version,
+            "base_url": base_url,
+            "api_type": api_type,
+        }
+        # remove keys with None values
+        self.client_args = {k: v for k,
+                            v in self.client_args.items() if v is not None}
+
+        if api_type:
+            if api_type == "azure":
+                self.client = AzureOpenAI(**self.client_args)
+            else:
+                raise ValueError(f"Unknown api_type: {api_type}")
+        else:
+            self.client = OpenAI(**self.client_args)
 
         self.model_name = model or "gpt-3.5-turbo"
-
         self.model_max_token_dict = get_models_maxtoken_dict(models)
-        # print("context lengths", self.model_max_token_dict)
 
     def generate(
         self,
@@ -51,7 +60,8 @@ class OpenAITextGenerator(TextGenerator):
         model = config.model or self.model_name
         prompt_tokens = num_tokens_from_messages(messages)
         max_tokens = max(
-            self.model_max_token_dict.get(model, 4096) - prompt_tokens - 10, 200
+            self.model_max_token_dict.get(
+                model, 4096) - prompt_tokens - 10, 200
         )
 
         oai_config = {
@@ -65,9 +75,6 @@ class OpenAITextGenerator(TextGenerator):
             "messages": messages,
         }
 
-        if openai.api_type and openai.api_type == "azure":
-            oai_config["engine"] = model
-
         self.model_name = model
         cache_key_params = (oai_config) | {"messages": messages}
         if use_cache:
@@ -78,7 +85,8 @@ class OpenAITextGenerator(TextGenerator):
         oai_response = self.client.chat.completions.create(**oai_config)
 
         response = TextGenerationResponse(
-            text=[Message(**x.message.model_dump()) for x in oai_response.choices],
+            text=[Message(**x.message.model_dump())
+                  for x in oai_response.choices],
             logprobs=[],
             config=oai_config,
             usage=dict(oai_response.usage),
