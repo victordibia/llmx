@@ -3,7 +3,6 @@ from .base_textgen import TextGenerator
 from ...datamodel import Message, TextGenerationConfig, TextGenerationResponse
 from ...utils import cache_request, get_models_maxtoken_dict, num_tokens_from_messages
 import os
-import openai
 from openai import AzureOpenAI, OpenAI
 from dataclasses import asdict
 
@@ -16,7 +15,7 @@ class OpenAITextGenerator(TextGenerator):
         organization: str = None,
         api_type: str = None,
         api_version: str = None,
-        base_url: str = None,
+        azure_endpoint: str = None,
         model: str = None,
         models: Dict = None,
     ):
@@ -32,8 +31,7 @@ class OpenAITextGenerator(TextGenerator):
             "api_key": self.api_key,
             "organization": organization,
             "api_version": api_version,
-            "base_url": base_url,
-            "api_type": api_type,
+            "azure_endpoint": azure_endpoint,
         }
         # remove keys with None values
         self.client_args = {k: v for k,
