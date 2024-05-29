@@ -180,3 +180,15 @@ def get_models_maxtoken_dict(models_list):
             details = model["model"]["parameters"]
             models_dict[details["model"]] = model["max_tokens"]
     return models_dict
+
+
+def get_models_contextwindow_dict(models_list):
+    if not models_list:
+        return {}
+
+    models_dict = {}
+    for model in models_list:
+        if "model" in model and "parameters" in model["model"]:
+            details = model["model"]["parameters"]
+            models_dict[details["model"]] = model.get("context_window", model["max_tokens"])
+    return models_dict

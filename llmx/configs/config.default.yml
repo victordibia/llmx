@@ -5,17 +5,26 @@ model:
     api_key: null
 
 # list of supported providers.
+# Updated from https://platform.openai.com/docs/models
 providers:
   openai:
     name: OpenAI
     description: OpenAI's and AzureOpenAI GPT-3 and GPT-4 models.
     models:
       - name: gpt-4o # general model name, can be anything
-        max_tokens: 128000 # max supported tokens
+        max_tokens: 4096 # max generated tokens
+        context_window: 128000 # system + input + generated tokens
         model:
           provider: openai
           parameters:
             model: gpt-4o # model actual name, required
+      - name: gpt-4-turbo
+        max_tokens: 8192 
+        context_window: 128000
+        model:
+          provider: openai
+          parameters:
+            model: gpt-4-turbo 
       - name: gpt-4
         max_tokens: 8192 
         model:
