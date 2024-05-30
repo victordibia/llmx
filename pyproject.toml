@@ -27,6 +27,7 @@ dependencies = [
     "google.auth",
     "typer",
     "pyyaml",
+    "httpx",
 ]
 optional-dependencies = {web = ["fastapi", "uvicorn"], transformers = ["transformers[torch]>=4.26","accelerate"]}
 

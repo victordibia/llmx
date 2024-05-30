@@ -5,6 +5,7 @@ from ...utils import cache_request, get_models_maxtoken_dict, num_tokens_from_me
 import os
 from openai import AzureOpenAI, OpenAI
 from dataclasses import asdict
+import httpx
 
 
 class OpenAITextGenerator(TextGenerator):
@@ -18,6 +19,7 @@ class OpenAITextGenerator(TextGenerator):
         azure_endpoint: str = None,
         model: str = None,
         models: Dict = None,
+        http_client: httpx.Client = None,
     ):
         super().__init__(provider=provider)
         self.api_key = api_key or os.environ.get("OPENAI_API_KEY", None)
@@ -32,6 +34,7 @@ class OpenAITextGenerator(TextGenerator):
             "organization": organization,
             "api_version": api_version,
             "azure_endpoint": azure_endpoint,
+            "http_client": http_client
         }
         # remove keys with None values
         self.client_args = {k: v for k,
