@@ -35,6 +35,8 @@ class TextGenerationConfig:
     model: Optional[str] = None
     stop: Union[List[str], str, None] = None
     use_cache: bool = True
+    continue_until_finish: bool = False
+    continue_prompt: str = "Continue from previous answer from exactly where it finished, these answer will be joined, so you must not introduce any syntactic error, else nothing. Use no preamble or closing words, only what the continuation requires."
 
     def __post_init__(self):
         self._fields_dict = asdict(self)
