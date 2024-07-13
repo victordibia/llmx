@@ -1,6 +1,6 @@
 from typing import Dict, Union
 from dataclasses import asdict, dataclass
-from transformers import (AutoTokenizer, AutoModelForCausalLM, GenerationConfig)
+from transformers import (AutoTokenizer, AutoModelForCausalLM, GenerationConfig, BitsAndBytesConfig)
 import torch
 
 
@@ -99,7 +99,7 @@ class HFTextGenerator(TextGenerator):
         self.dialogue_type = kwargs.get("dialogue_type", "alpaca")
 
         self.model_name = kwargs.get("model", "uukuguy/speechless-llama2-hermes-orca-platypus-13b")
-        self.load_in_8bit = kwargs.get("load_in_8bit", False)
+        self.quantization_config = kwargs.get("quantization_config", BitsAndBytesConfig())
         self.trust_remote_code = kwargs.get("trust_remote_code", False)
         self.device = kwargs.get("device", self.get_default_device())
 
@@ -107,8 +107,11 @@ class HFTextGenerator(TextGenerator):
         self.tokenizer = AutoTokenizer.from_pretrained(
             self.model_name, trust_remote_code=self.trust_remote_code)
         self.model = AutoModelForCausalLM.from_pretrained(
-            self.model_name, device_map=device_map, load_in_8bit=self.load_in_8bit,
-            trust_remote_code=self.trust_remote_code)
+            self.model_name,
+            device_map=device_map,
+            quantization_config=self.quantization_config,
+            trust_remote_code=self.trust_remote_code,
+        )
         if not device_map:
             self.model.to(self.device)
         self.model.config.pad_token_id = self.tokenizer.pad_token_id
