@@ -6,10 +6,26 @@ model:
 
 # list of supported providers.
 providers:
+  anthropic:
+    name: Anthropic
+    description: Anthropic's Claude models.
+    models:
+      - name: claude-3-5-sonnet-20240620
+        max_tokens: 8192
+        model:
+          provider: anthropic
+          parameters:
+            model: claude-3-5-sonnet-20240620
   openai:
     name: OpenAI
     description: OpenAI's and AzureOpenAI GPT-3 and GPT-4 models.
     models:
+      - name: gpt-4o # general model name, can be anything
+        max_tokens: 4096 # max supported tokens
+        model:
+          provider: openai
+          parameters:
+            model: gpt-4o 
       - name: gpt-4 # general model name, can be anything
         max_tokens: 8192 # max supported tokens
         model:
