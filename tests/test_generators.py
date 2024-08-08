@@ -19,7 +19,16 @@ messages = [
     {"role": "user",
      "content": "What is the capital of France? Only respond with the exact answer"}]
 
+def test_anthropic():
+    anthropic_gen = llm(provider="anthropic", api_key=os.environ.get("ANTHROPIC_API_KEY", None))
+    config.model = "claude-3-5-sonnet-20240620"  # or any other Anthropic model you want to test
+    anthropic_response = anthropic_gen.generate(messages, config=config)
+    answer = anthropic_response.text[0].content
+    print(anthropic_response.text[0].content)
 
+    assert ("paris" in answer.lower())
+    assert len(anthropic_response.text) == 1 
+    
 def test_openai():
     openai_gen = llm(provider="openai")
     openai_response = openai_gen.generate(messages, config=config)

@@ -2,14 +2,14 @@ from ...utils import load_config
 from .openai_textgen import OpenAITextGenerator
 from .palm_textgen import PalmTextGenerator
 from .cohere_textgen import CohereTextGenerator
+from .anthropic_textgen import AnthropicTextGenerator
 import logging
 
 logger = logging.getLogger("llmx")
 
 
 def sanitize_provider(provider: str):
-    if provider.lower() == "openai" or provider.lower() == "default" or provider.lower(
-    ) == "azureopenai" or provider.lower() == "azureoai":
+    if provider.lower() == "openai" or provider.lower() == "default" or provider.lower() == "azureopenai" or provider.lower() == "azureoai":
         return "openai"
     elif provider.lower() == "palm" or provider.lower() == "google":
         return "palm"
@@ -17,9 +17,11 @@ def sanitize_provider(provider: str):
         return "cohere"
     elif provider.lower() == "hf" or provider.lower() == "huggingface":
         return "hf"
+    elif provider.lower() == "anthropic" or provider.lower() == "claude":
+        return "anthropic"
     else:
         raise ValueError(
-            f"Invalid provider '{provider}'.  Supported providers are 'openai', 'hf', 'palm', and 'cohere'."
+            f"Invalid provider '{provider}'. Supported providers are 'openai', 'hf', 'palm', 'cohere', and 'anthropic'."
         )
 
 
@@ -54,6 +56,8 @@ def llm(provider: str = None, **kwargs):
         return PalmTextGenerator(**kwargs)
     elif provider.lower() == "cohere":
         return CohereTextGenerator(**kwargs)
+    elif provider.lower() == "anthropic":
+        return AnthropicTextGenerator(**kwargs)
     elif provider.lower() == "hf":
         try:
             import transformers
@@ -67,7 +71,7 @@ def llm(provider: str = None, **kwargs):
             import torch
         except ImportError:
             raise ImportError(
-                "Please install the `torch` package to use the HFTextGenerator class.  pip install llmx[transformers]"
+                "Please install the `torch` package to use the HFTextGenerator class. pip install llmx[transformers]"
             )
 
         from .hf_textgen import HFTextGenerator
@@ -76,5 +80,5 @@ def llm(provider: str = None, **kwargs):
 
     else:
         raise ValueError(
-            f"Invalid provider '{provider}'.  Supported providers are 'openai', 'hf', 'palm', and 'cohere'."
+            f"Invalid provider '{provider}'. Supported providers are 'openai', 'hf', 'palm', 'cohere', and 'anthropic'."
         )
