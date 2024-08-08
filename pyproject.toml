@@ -25,6 +25,7 @@ dependencies = [
     "diskcache",
     "cohere", 
     "google.auth",
+    "anthropic",
     "typer",
     "pyyaml",
 ]
