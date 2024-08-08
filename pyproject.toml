@@ -28,7 +28,7 @@ dependencies = [
     "typer",
     "pyyaml",
 ]
-optional-dependencies = {web = ["fastapi", "uvicorn"], transformers = ["transformers[torch]>=4.26","accelerate"]}
+optional-dependencies = {web = ["fastapi", "uvicorn"], transformers = ["transformers[torch]>=4.26","accelerate", "bitsandbytes"]}
 
 dynamic = ["version"]
 
