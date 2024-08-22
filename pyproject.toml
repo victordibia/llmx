@@ -28,6 +28,7 @@ dependencies = [
     "anthropic",
     "typer",
     "pyyaml",
+    "scikit-learn"
 ]
 optional-dependencies = {web = ["fastapi", "uvicorn"], transformers = ["transformers[torch]>=4.26","accelerate", "bitsandbytes"]}
 
