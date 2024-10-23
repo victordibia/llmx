@@ -117,7 +117,7 @@ from llmx import  llm
 hfgen_gen = llm(
     provider="openai",
     api_base="http://localhost:8000",
-    api_key="EMPTY,
+    api_key="EMPTY",
 )
 ...
 ```
