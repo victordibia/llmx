@@ -32,7 +32,7 @@ messages = [
 - **Good Utils (e.g., Caching etc)**: E.g. being able to use caching for faster responses. General policy is that cache is used if config (including messages) is the same. If you want to force a new response, set `use_cache=False` in the `generate` call.
 
 ```python
-response = gen.generate(messages=messages, config=TextGeneratorConfig(n=1, use_cache=True))
+response = gen.generate(messages=messages, config=TextGenerationConfig(n=1, use_cache=True))
 ```
 
 Output looks like
