@@ -1,6 +1,7 @@
 from ...utils import load_config
 from .openai_textgen import OpenAITextGenerator
 from .palm_textgen import PalmTextGenerator
+from .gemini_textgen import GeminiTextGenerator
 from .cohere_textgen import CohereTextGenerator
 from .anthropic_textgen import AnthropicTextGenerator
 import logging
@@ -13,6 +14,8 @@ def sanitize_provider(provider: str):
         return "openai"
     elif provider.lower() == "palm" or provider.lower() == "google":
         return "palm"
+    elif provider.lower() == "gemini" or provider.lower() == "google":
+        return "gemini"
     elif provider.lower() == "cohere":
         return "cohere"
     elif provider.lower() == "hf" or provider.lower() == "huggingface":
@@ -21,7 +24,7 @@ def sanitize_provider(provider: str):
         return "anthropic"
     else:
         raise ValueError(
-            f"Invalid provider '{provider}'. Supported providers are 'openai', 'hf', 'palm', 'cohere', and 'anthropic'."
+            f"Invalid provider '{provider}'. Supported providers are 'openai', 'hf', 'palm', 'gemini', 'cohere', and 'anthropic'."
         )
 
 
@@ -54,6 +57,8 @@ def llm(provider: str = None, **kwargs):
         return OpenAITextGenerator(**kwargs)
     elif provider.lower() == "palm":
         return PalmTextGenerator(**kwargs)
+    elif provider.lower() == "gemini":
+        return GeminiTextGenerator(**kwargs)
     elif provider.lower() == "cohere":
         return CohereTextGenerator(**kwargs)
     elif provider.lower() == "anthropic":
@@ -80,5 +85,5 @@ def llm(provider: str = None, **kwargs):
 
     else:
         raise ValueError(
-            f"Invalid provider '{provider}'. Supported providers are 'openai', 'hf', 'palm', 'cohere', and 'anthropic'."
+            f"Invalid provider '{provider}'. Supported providers are 'openai', 'hf', 'palm', 'gemini', 'cohere', and 'anthropic'."
         )

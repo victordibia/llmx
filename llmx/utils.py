@@ -10,6 +10,7 @@ import platform
 import google.auth
 import google.auth.transport.requests
 from google.oauth2 import service_account
+import google.generativeai as genai
 import requests
 import yaml
 
@@ -129,6 +130,48 @@ def gcp_request(
 
     return response.json()
 
+def gcp_genai_request(
+    url: str,
+    method: str = "POST",
+    body: dict = None,
+    headers: dict = None,
+    credentials: google.auth.credentials.Credentials = None,
+    api_key: str = None,
+    model: str = None,
+    request_timeout: int = 60,
+    **kwargs,
+):
+
+    headers = headers or {}
+
+    if "key" not in url:
+        if credentials is None:
+            credentials = get_gcp_credentials()
+        auth_req = google.auth.transport.requests.Request()
+        if credentials.expired:
+            credentials.refresh(auth_req)
+        headers["Authorization"] = f"Bearer {credentials.token}"
+    headers["Content-Type"] = "application/json"
+
+    if api_key:
+      genai.configure(api_key=api_key)
+    if model:
+      model = genai.GenerativeModel(model, system_instruction=body["system_messages"])
+    else:
+      # Default model
+      model = genai.GenerativeModel("gemini-1.5-flash", system_instruction=body["system_messages"])
+
+    response = model.generate_content(
+        contents=body["contents"], generation_config=body["parameters"])
+
+    prompt_feedback = response.prompt_feedback
+    block_reason = prompt_feedback.block_reason
+    if block_reason != 0:
+        raise Exception(
+            f"Request failed with reason {block_reason}"
+        )
+
+    return response.candidates
 
 def load_config():
     try:

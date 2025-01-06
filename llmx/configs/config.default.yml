@@ -112,6 +112,19 @@ providers:
             project_id: <your-project-id>
             project_location: <your-project-location>
             palm_key_file: <path-to-your-palm-key-file>
+  gemini:
+    name: Google
+    description: Google's Gemini LLM models.
+    models:
+      - name: gemini-1.5-flash
+        max_tokens: 1024
+        model:
+          provider: gemini
+          parameters:
+            model: gemini-1.5-flash
+            project_id: <your-project-id>
+            project_location: <your-project-location>
+            palm_key_file: <path-to-your-palm-key-file>
   cohere:
     name: Cohere
     description: Cohere's LLM models.
