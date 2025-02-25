@@ -147,3 +147,25 @@ providers:
             model: uukuguy/speechless-llama2-hermes-orca-platypus-13b
             device_map: auto
             trust_remote_code: true
+  ollama:
+    name: Ollama
+    description: Local LLM models using the Ollama framework.
+    models:
+      - name: llama3.1
+        max_tokens: 4096
+        model:
+          provider: ollama
+          parameters:
+            model: llama3.1
+      - name: qwen2.5-coder:3b
+        max_tokens: 4096
+        model:
+          provider: ollama
+          parameters:
+            model: qwen2.5-coder:3b
+      - name: deepseek-r1
+        max_tokens: 4096
+        model:
+          provider: ollama
+          parameters:
+            model: deepseek-r1
