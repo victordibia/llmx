@@ -60,6 +60,16 @@ def test_cohere():
     assert ("paris" in answer.lower())
     assert len(cohere_response.text) == 2
 
+def test_ollama():
+    ollama_gen = llm(provider="ollama")
+    config.model = "llama3.1"
+    ollama_response = ollama_gen.generate(messages, config=config)
+    answer = ollama_response.text[0].content
+    print(ollama_response.text[0].content)
+
+    assert ("paris" in answer.lower())
+    assert len(ollama_response.text) == 1
+
 
 @pytest.mark.skipif(os.environ.get("LLMX_RUNALL", None) is None
                     or os.environ.get("LLMX_RUNALL", None) == "False", reason="takes too long")
