@@ -3,6 +3,7 @@ from .openai_textgen import OpenAITextGenerator
 from .palm_textgen import PalmTextGenerator
 from .cohere_textgen import CohereTextGenerator
 from .anthropic_textgen import AnthropicTextGenerator
+from .custom_textgen import CustomTextGenerator
 import logging
 
 logger = logging.getLogger("llmx")
@@ -19,9 +20,11 @@ def sanitize_provider(provider: str):
         return "hf"
     elif provider.lower() == "anthropic" or provider.lower() == "claude":
         return "anthropic"
+    elif provider.lower() == "custom":
+        return "custom"
     else:
         raise ValueError(
-            f"Invalid provider '{provider}'. Supported providers are 'openai', 'hf', 'palm', 'cohere', and 'anthropic'."
+            f"Invalid provider '{provider}'. Supported providers are 'openai', 'hf', 'palm', 'cohere', 'custom', and 'anthropic'."
         )
 
 
@@ -58,6 +61,8 @@ def llm(provider: str = None, **kwargs):
         return CohereTextGenerator(**kwargs)
     elif provider.lower() == "anthropic":
         return AnthropicTextGenerator(**kwargs)
+    elif provider.lower() == "custom":
+        return CustomTextGenerator(**kwargs)
     elif provider.lower() == "hf":
         try:
             import transformers
@@ -80,5 +85,5 @@ def llm(provider: str = None, **kwargs):
 
     else:
         raise ValueError(
-            f"Invalid provider '{provider}'. Supported providers are 'openai', 'hf', 'palm', 'cohere', and 'anthropic'."
+            f"Invalid provider '{provider}'. Supported providers are 'openai', 'hf', 'palm', 'cohere', 'custom', and 'anthropic'."
         )

@@ -74,3 +74,15 @@ def test_hf_local():
 
     assert ("paris" in answer.lower())
     assert len(hf_local_response.text) == 2
+
+def test_custom():
+    custom_gen = llm(
+        provider="custom",
+        text_generation_function=lambda text: "paris",
+    )
+
+    custom_response = custom_gen.generate(messages, config=config)
+    answer = custom_response.text[0].content
+
+    assert ("paris" in answer.lower())
+    assert len(custom_response.text) == 1
