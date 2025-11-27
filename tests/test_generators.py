@@ -74,3 +74,17 @@ def test_hf_local():
 
     assert ("paris" in answer.lower())
     assert len(hf_local_response.text) == 2
+    
+    
+def test_ollama_local():
+    ollama_local_gen = llm(
+        provider="ollama",
+        model="llama3.2:3b",
+        model_name ="llama3.2:3b"
+        )
+    ollama_local_response = ollama_local_gen.generate(messages, config=config)
+    answer = ollama_local_response.text[0].content
+    print(ollama_local_response.text[0].content)
+    
+if __name__ == "__main__":
+    test_ollama_local()
