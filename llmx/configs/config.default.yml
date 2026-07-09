@@ -1,8 +1,8 @@
 # Sets the the default model to use for llm() when no provider parameter is set.
 model:
-  provider: openai
+  provider: gemini
   parameters:
-    api_key: null
+    model: gemini-2.5-flash
 
 # list of supported providers.
 providers:
@@ -20,18 +20,18 @@ providers:
     name: Gemini
     description: Google's Gemini models (via the Gemini API / AI Studio).
     models:
-      - name: gemini-1.5-pro
+      - name: gemini-2.5-pro
         max_tokens: 8192
         model:
           provider: gemini
           parameters:
-            model: gemini-1.5-pro
-      - name: gemini-1.5-flash
+            model: gemini-2.5-pro
+      - name: gemini-2.5-flash
         max_tokens: 8192
         model:
           provider: gemini
           parameters:
-            model: gemini-1.5-flash
+            model: gemini-2.5-flash
   openai:
     name: OpenAI
     description: OpenAI's and AzureOpenAI GPT-3 and GPT-4 models.

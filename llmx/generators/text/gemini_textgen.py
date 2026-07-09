@@ -37,7 +37,11 @@ class GeminiTextGenerator(TextGenerator):
             if message["role"] == "system":
                 system_message = content if system_message is None else system_message + "\n" + content
             else:
-                role = "model" if message["role"] == "assistant" else "user"
+                # lida sends its instruction/prompt content labeled as "assistant"
+                # (there's no genuine prior model turn to preserve), so treat
+                # everything non-system as a user turn to satisfy Gemini's
+                # requirement that single-turn requests end with a user role.
+                role = "user"
                 formatted_messages.append(
                     types.Content(role=role, parts=[types.Part.from_text(text=content)])
                 )
