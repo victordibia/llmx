@@ -2,7 +2,7 @@
 
 [![PyPI version](https://badge.fury.io/py/llmx.svg)](https://badge.fury.io/py/llmx)
 
-A simple python package that provides a unified interface to several LLM providers of chat fine-tuned models [OpenAI, AzureOpenAI, PaLM, Cohere and local HuggingFace Models].
+A simple python package that provides a unified interface to several LLM providers of chat fine-tuned models [OpenAI, AzureOpenAI, PaLM, Gemini, Cohere, Anthropic and local HuggingFace Models].
 
 > **Note**
 > llmx wraps multiple api providers and its interface _may_ change as the providers as well as the general field of LLMs evolve.
@@ -16,6 +16,7 @@ from llmx import  llm
 
 gen = llm(provider="openai") # support azureopenai models too.
 gen = llm(provider="palm") # or google
+gen = llm(provider="gemini")
 gen = llm(provider="cohere") # or palm
 gen = llm(provider="hf", model="HuggingFaceH4/zephyr-7b-beta", device_map="auto") # run huggingface model locally
 ```
@@ -83,6 +84,9 @@ export PALM_API_KEY=<your key>
 export PALM_SERVICE_ACCOUNT_KEY_FILE= <path to your service account key file>
 export PALM_PROJECT_ID=<your gcp project id>
 export PALM_PROJECT_LOCATION=<your project location>
+
+# for Gemini, get an api key from Google AI Studio (https://aistudio.google.com/app/apikey)
+export GEMINI_API_KEY=<your key>
 ```
 
 You can also set the default provider and list of supported providers via a config file. Use the yaml format in this [sample `config.default.yml` file](llmx/configs/config.default.yml) and set the `LLMX_CONFIG_PATH` to the path of the config file.
@@ -127,7 +131,9 @@ hfgen_gen = llm(
 - Supported models
   - [x] OpenAI
   - [x] PaLM ([MakerSuite](https://developers.generativeai.google/api/rest/generativelanguage), [Vertex AI](https://cloud.google.com/vertex-ai/docs/generative-ai/learn/models))
+  - [x] Gemini
   - [x] Cohere
+  - [x] Anthropic
   - [x] HuggingFace (local)
 
 ## Caveats
